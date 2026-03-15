@@ -1,0 +1,177 @@
+/** Typed message schema for the current in-app localization layer. */
+export interface MessageSchema {
+  common: {
+    actions: {
+      home: string;
+      projects: string;
+      settings: string;
+      search: string;
+      startProject: string;
+      openCompose: string;
+      openEditor: string;
+      useTemplate: string;
+      cancel: string;
+      save: string;
+      preview: string;
+      export: string;
+      templates: string;
+      check: string;
+      autoFix: string;
+      mobile: string;
+      desktop: string;
+      saveTemplate: string;
+      saveAndLeave: string;
+      leaveWithoutSaving: string;
+      applyGuidedTemplate: string;
+      applySavedTemplate: string;
+    };
+    filters: {
+      all: string;
+      compose: string;
+      editor: string;
+      allStatuses: string;
+      anyTime: string;
+      today: string;
+      last7Days: string;
+      last30Days: string;
+      searchProjectName: string;
+      searchSavedTemplates: string;
+    };
+    status: {
+      all: string;
+      draft: string;
+      generating: string;
+      generated: string;
+      exported: string;
+      failed: string;
+    };
+    mode: {
+      compose: string;
+      shortformVideo: string;
+      modelShot: string;
+      cutout: string;
+      brandImage: string;
+      gifSource: string;
+      freeform: string;
+      editorFallback: string;
+    };
+    summary: {
+      projectsVisibleLabel: string;
+      templatesVisibleLabel: string;
+      blocksLabel: string;
+    };
+  };
+  layout: {
+    logoTitle: string;
+    searchWorkspace: string;
+    startProject: string;
+  };
+  home: {
+    title: string;
+    description: string;
+    directUploadTitle: string;
+    directUploadDescription: string;
+    recentProjectsTitle: string;
+    recentProjectsDescription: string;
+    savedTemplatesTitle: string;
+    savedTemplatesDescription: string;
+    modeDescriptions: {
+      compose: string;
+      shortformVideo: string;
+      modelShot: string;
+      cutout: string;
+      brandImage: string;
+      gifSource: string;
+      freeform: string;
+    };
+    emptyProjectsTitle: string;
+    emptyProjectsDescription: string;
+    emptyProjectsHint: string;
+    noProjectsMatchTitle: string;
+    noProjectsMatchDescription: string;
+    emptyTemplatesTitle: string;
+    emptyTemplatesDescription: string;
+    noTemplatesMatchTitle: string;
+    noTemplatesMatchDescription: string;
+    templatePreviewFallback: string;
+  };
+  projectsPage: {
+    title: string;
+    description: string;
+    explorerTitle: string;
+    explorerDescription: string;
+    savedTemplatesTitle: string;
+    savedTemplatesDescription: string;
+  };
+  settingsPage: {
+    title: string;
+    description: string;
+    workspace: string;
+    projects: string;
+    savedTemplates: string;
+    assets: string;
+    currentScopeLabel: string;
+    projectCountDescription: string;
+    templateCountDescription: string;
+    assetCountDescription: string;
+    runtimeSummaryTitle: string;
+    storageSummaryTitle: string;
+    nextJs: string;
+    prisma: string;
+    remotionPreview: string;
+    enabled: string;
+    disabled: string;
+    database: string;
+    uploadsPath: string;
+  };
+  modeCard: {
+    projectNameSuffix: string;
+    createProjectFailed: string;
+  };
+  composeShared: {
+    unsavedChanges: string;
+    allChangesSaved: string;
+    backHome: string;
+    backHomeWithUnsaved: string;
+    editor: string;
+    platform: string;
+    favorite: string;
+    savedAtLabel: string;
+    saveFavoriteTemplateTitle: string;
+    saveFavoriteTemplateDescription: string;
+    templateName: string;
+    templateSuffix: string;
+    templateNamePlaceholder: string;
+    saveTemplateButton: string;
+    saving: string;
+    applyingTemplate: string;
+    leaveComposeTitle: string;
+    leaveComposeDescription: string;
+    leaveComposeBody: string;
+    composeTemplatesTitle: string;
+    guided: string;
+    saved: string;
+    loadingSavedTemplates: string;
+    noSavedFavoritesTitle: string;
+    noSavedFavoritesDescription: string;
+    savedTemplatePreviewFallback: string;
+    category: string;
+    framework: string;
+    hook: string;
+    layoutStructure: string;
+    composeDocumentSaved: string;
+    composeDocumentSaveFailedPrefix: string;
+    designCheckPassed: string;
+    designIssuesNeedAttentionSuffix: string;
+    noFixesNeeded: string;
+    appliedAutomaticFixesSuffix: string;
+    favoriteTemplateSaved: string;
+    favoriteTemplateSaveFailedPrefix: string;
+    replaceCurrentComposeConfirm: string;
+    templateAppliedPrefix: string;
+    saveInProgress: string;
+    autosaveFailed: string;
+    templateStartedFromSaved: string;
+    templateStartFailedPrefix: string;
+  };
+}

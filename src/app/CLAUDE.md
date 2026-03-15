@@ -1,0 +1,23 @@
+# app/
+Next.js App Router routes, pages, and API handlers.
+
+## Structure
+- `layout.tsx`: root layout
+- `page.tsx`: home dashboard
+- `landing/page.tsx`: separate marketing landing workspace
+- `projects/[id]/editor/page.tsx`: flow editor route
+- `projects/[id]/compose/page.tsx`: compose editor route
+- `projects/[id]/preview/page.tsx`: preview route
+- `projects/[id]/result/page.tsx`: mode-aware result route
+- `api/projects/`: project CRUD and async job routes
+- `uploads/[...path]/route.ts`: upload file serving route
+
+## API Notes
+- `api/projects/[id]/thumbnail/`: shortform preview thumbnail generation
+- `api/projects/[id]/marketing-script/`: shortform preview marketing-script generation
+- Async API pattern stays `POST -> 202 + jobId`, `GET -> poll`
+
+## Convention
+- Keep page entry files server-first.
+- Push heavy interaction into client components.
+- Keep route contracts aligned with `docs/ref/SCHEMA-INDEX.md`.

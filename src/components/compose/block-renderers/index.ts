@@ -1,0 +1,19 @@
+/** 블록 렌더러 barrel — 18종 블록 개별 파일 디스패치 */
+export { HeroBlockRenderer } from "./hero-block";
+export { SellingPointBlockRenderer } from "./selling-point-block";
+export { TextBlockRenderer } from "./text-block";
+export { ImageTextBlockRenderer } from "./image-text-block";
+export { ImageFullBlockRenderer } from "./image-full-block";
+export { ImageGridBlockRenderer } from "./image-grid-block";
+export { SpecTableBlockRenderer } from "./spec-table-block";
+export { ComparisonBlockRenderer } from "./comparison-block";
+export { ReviewBlockRenderer } from "./review-block";
+export { DividerBlockRenderer } from "./divider-block";
+export { VideoBlockRenderer } from "./video-block";
+export { CtaBlockRenderer } from "./cta-block";
+export { UsageStepsBlockRenderer } from "./usage-steps-block";
+export { FaqBlockRenderer } from "./faq-block";
+export { NoticeBlockRenderer } from "./notice-block";
+export { BannerStripBlockRenderer } from "./banner-strip-block";
+export { PricePromoBlockRenderer } from "./price-promo-block";
+export { TrustBadgeBlockRenderer } from "./trust-badge-block";
