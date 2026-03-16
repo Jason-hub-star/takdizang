@@ -7,6 +7,7 @@ import { WORKSPACE_CONTROL, WORKSPACE_SURFACE, WORKSPACE_TEXT } from "@/lib/work
 import { useCompose } from "./compose-context";
 import { ImagePicker } from "./image-picker";
 import { ColorStylePicker, ImageFilterControls, SceneComposeAction, FontPicker } from "./shared";
+import { BlockTextGenerator } from "./shared/block-text-generator";
 import { Plus, Trash2 } from "lucide-react";
 
 const OVERLAY_ALIGN_PRESETS = [
@@ -290,6 +291,16 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
         {/* text-block */}
         {block.type === "text-block" && (
           <div className="space-y-3">
+            <BlockTextGenerator
+              blockType="text-block"
+              onResult={(r) => {
+                const res = r as { headline?: string; body?: string };
+                onUpdate(block.id, {
+                  ...(res.headline ? { heading: res.headline } : {}),
+                  ...(res.body ? { body: res.body } : {}),
+                });
+              }}
+            />
             <Field label="글꼴">
               <FontPicker
                 value={block.fontFamily ?? "default"}
@@ -443,6 +454,22 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
         {/* selling-point */}
         {block.type === "selling-point" && (
           <div className="space-y-3">
+            <BlockTextGenerator
+              blockType="selling-point"
+              onResult={(r) => {
+                const res = r as { items?: Array<{ title: string; description: string }> };
+                if (res.items) {
+                  onUpdate(block.id, {
+                    items: res.items.slice(0, 4).map((item, i) => ({
+                      ...block.items[i],
+                      icon: block.items[i]?.icon ?? "star",
+                      title: item.title,
+                      description: item.description,
+                    })),
+                  });
+                }
+              }}
+            />
             <Field label="레이아웃">
               <select
                 value={block.layout ?? "grid"}
@@ -493,6 +520,21 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
         {/* review */}
         {block.type === "review" && (
           <div className="space-y-3">
+            <BlockTextGenerator
+              blockType="review"
+              onResult={(r) => {
+                const res = r as { reviews?: Array<{ reviewer: string; rating: number; text: string }> };
+                if (res.reviews) {
+                  onUpdate(block.id, {
+                    reviews: res.reviews.map((rev) => ({
+                      author: rev.reviewer,
+                      rating: rev.rating,
+                      text: rev.text,
+                    })),
+                  });
+                }
+              }}
+            />
             <ColorStylePicker
               label="표시 스타일"
               value={block.displayStyle ?? "card"}
@@ -576,6 +618,21 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
         {/* faq */}
         {block.type === "faq" && (
           <div className="space-y-3">
+            <BlockTextGenerator
+              blockType="faq"
+              onResult={(r) => {
+                const res = r as { items?: Array<{ question: string; answer: string }> };
+                if (res.items) {
+                  onUpdate(block.id, {
+                    items: res.items.map((item) => ({
+                      id: `faq-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                      question: item.question,
+                      answer: item.answer,
+                    })),
+                  });
+                }
+              }}
+            />
             <p className={`text-xs ${WORKSPACE_TEXT.muted}`}>
               질문 {block.items.length}개 (최대 10개) — 아래 블록에서 직접 수정
             </p>
@@ -604,6 +661,16 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
         {/* banner-strip */}
         {block.type === "banner-strip" && (
           <div className="space-y-3">
+            <BlockTextGenerator
+              blockType="banner-strip"
+              onResult={(r) => {
+                const res = r as { text?: string; subtext?: string };
+                onUpdate(block.id, {
+                  ...(res.text ? { text: res.text } : {}),
+                  ...(res.subtext ? { subtext: res.subtext } : {}),
+                });
+              }}
+            />
             <Field label="배경색">
               <input
                 type="color"

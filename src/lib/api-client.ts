@@ -295,6 +295,18 @@ export function getWorkspaceAssets() {
   return get<{ groups: WorkspaceAssetGroup[] }>("/api/workspace/assets");
 }
 
+// --- Block text generation ---
+
+export function generateBlockText(
+  projectId: string,
+  opts: { blockType: string; context?: string },
+) {
+  return post<{ blockType: string; result: Record<string, unknown> }>(
+    `/api/projects/${projectId}/generate-block-text`,
+    opts,
+  );
+}
+
 // --- BGM ---
 
 export function uploadBgm(projectId: string, file: File) {
