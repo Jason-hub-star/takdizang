@@ -1,0 +1,332 @@
+/** AiToolDialog - 영상 렌더링 / 썸네일 / 마케팅 스크립트 AI 도구 모달 */
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Film,
+  Image as ImageIcon,
+  FileText,
+  Loader2,
+  Download,
+  Copy,
+  Check,
+  X,
+} from "lucide-react";
+import { toast } from "sonner";
+import {
+  startRender,
+  pollRenderStatus,
+  startGenerateThumbnail,
+  pollGenerateThumbnail,
+  startGenerateMarketingScript,
+  pollGenerateMarketingScript,
+} from "@/lib/api-client";
+import { WORKSPACE_CONTROL, WORKSPACE_SURFACE, WORKSPACE_TEXT } from "@/lib/workspace-surface";
+
+interface AiToolDialogProps {
+  open: boolean;
+  toolType: "video" | "thumbnail" | "script" | null;
+  projectId: string;
+  onClose: () => void;
+}
+
+const POLL_INTERVAL = 2000;
+
+export function AiToolDialog({ open, toolType, projectId, onClose }: AiToolDialogProps) {
+  useEffect(() => {
+    if (!open) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, onClose]);
+
+  if (!open || !toolType) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#201A17]/35 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className={`relative w-full max-w-md rounded-[28px] ${WORKSPACE_SURFACE.panelStrong} p-6`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className={`absolute right-4 top-4 ${WORKSPACE_TEXT.muted} hover:text-[#4D433D]`}
+        >
+          <X className="h-4 w-4" />
+        </button>
+
+        {toolType === "video" && <VideoRenderTool projectId={projectId} />}
+        {toolType === "thumbnail" && <ThumbnailTool projectId={projectId} />}
+        {toolType === "script" && <MarketingScriptTool projectId={projectId} />}
+      </div>
+    </div>
+  );
+}
+
+function VideoRenderTool({ projectId }: { projectId: string }) {
+  const [running, setRunning] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const abortRef = useRef(false);
+  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    abortRef.current = true;
+    if (pollTimerRef.current) clearTimeout(pollTimerRef.current);
+  }, []);
+
+  const handleRender = useCallback(async () => {
+    if (running) return;
+    setRunning(true);
+    setDownloadUrl(null);
+    abortRef.current = false;
+
+    try {
+      await startRender(projectId);
+
+      while (!abortRef.current) {
+        await new Promise<void>((resolve) => {
+          pollTimerRef.current = setTimeout(resolve, POLL_INTERVAL);
+        });
+        if (abortRef.current) break;
+
+        const result = await pollRenderStatus(projectId);
+        if (result.status === "done") {
+          const artifact = result.artifact as { filePath?: string } | undefined;
+          if (artifact?.filePath) setDownloadUrl(artifact.filePath);
+          toast.success("영상 렌더링이 완료되었습니다.");
+          break;
+        }
+        if (result.status === "failed") {
+          throw new Error("영상 렌더링에 실패했습니다.");
+        }
+      }
+    } catch (error) {
+      if (!abortRef.current) toast.error(error instanceof Error ? error.message : "영상 렌더링 실패");
+    } finally {
+      setRunning(false);
+    }
+  }, [projectId, running]);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <Film className={`h-5 w-5 ${WORKSPACE_TEXT.accent}`} />
+        <h3 className={`text-sm font-semibold ${WORKSPACE_TEXT.title}`}>영상 렌더링</h3>
+      </div>
+      <p className={`text-xs ${WORKSPACE_TEXT.muted}`}>Remotion 기반으로 영상을 렌더링합니다.</p>
+      {downloadUrl && (
+        <a
+          href={downloadUrl}
+          download
+          className={`flex items-center gap-1.5 rounded-2xl px-3 py-2 text-xs font-medium ${WORKSPACE_CONTROL.subtleButton}`}
+        >
+          <Download className="h-3.5 w-3.5" />
+          영상 다운로드
+        </a>
+      )}
+      <button
+        type="button"
+        onClick={handleRender}
+        disabled={running}
+        className={`flex w-full items-center justify-center gap-1.5 rounded-2xl px-3 py-2.5 text-xs font-medium ${WORKSPACE_CONTROL.accentButton} disabled:opacity-50`}
+      >
+        {running ? (
+          <><Loader2 className="h-3.5 w-3.5 animate-spin" />렌더링 중...</>
+        ) : (
+          <><Film className="h-3.5 w-3.5" />렌더링 시작</>
+        )}
+      </button>
+    </div>
+  );
+}
+
+function ThumbnailTool({ projectId }: { projectId: string }) {
+  const [running, setRunning] = useState(false);
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const abortRef = useRef(false);
+  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    abortRef.current = true;
+    if (pollTimerRef.current) clearTimeout(pollTimerRef.current);
+  }, []);
+
+  const handleGenerate = useCallback(async () => {
+    if (running) return;
+    setRunning(true);
+    setResultUrl(null);
+    abortRef.current = false;
+
+    try {
+      const { jobId } = await startGenerateThumbnail(projectId);
+
+      while (!abortRef.current) {
+        await new Promise<void>((resolve) => {
+          pollTimerRef.current = setTimeout(resolve, POLL_INTERVAL);
+        });
+        if (abortRef.current) break;
+
+        const result = await pollGenerateThumbnail(projectId, jobId);
+        if (result.job.status === "done") {
+          const artifacts = (result as { artifacts?: Array<{ filePath: string }> }).artifacts;
+          if (artifacts?.[0]?.filePath) setResultUrl(artifacts[0].filePath);
+          toast.success("썸네일이 생성되었습니다.");
+          break;
+        }
+        if (result.job.status === "failed") {
+          throw new Error(result.job.error || "썸네일 생성 실패");
+        }
+      }
+    } catch (error) {
+      if (!abortRef.current) toast.error(error instanceof Error ? error.message : "썸네일 생성 실패");
+    } finally {
+      setRunning(false);
+    }
+  }, [projectId, running]);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <ImageIcon className={`h-5 w-5 ${WORKSPACE_TEXT.accent}`} />
+        <h3 className={`text-sm font-semibold ${WORKSPACE_TEXT.title}`}>썸네일 생성</h3>
+      </div>
+      {resultUrl && (
+        <div className="space-y-1.5">
+          <div className="overflow-hidden rounded-xl border border-[rgb(214_199_184_/_0.5)]">
+            <img src={resultUrl} alt="썸네일" className="w-full object-contain" />
+          </div>
+          <a
+            href={resultUrl}
+            download
+            className={`flex items-center justify-center gap-1.5 rounded-2xl px-3 py-2 text-xs font-medium ${WORKSPACE_CONTROL.subtleButton}`}
+          >
+            <Download className="h-3.5 w-3.5" />
+            다운로드
+          </a>
+        </div>
+      )}
+      <button
+        type="button"
+        onClick={handleGenerate}
+        disabled={running}
+        className={`flex w-full items-center justify-center gap-1.5 rounded-2xl px-3 py-2.5 text-xs font-medium ${WORKSPACE_CONTROL.accentButton} disabled:opacity-50`}
+      >
+        {running ? (
+          <><Loader2 className="h-3.5 w-3.5 animate-spin" />생성 중...</>
+        ) : (
+          <><ImageIcon className="h-3.5 w-3.5" />{resultUrl ? "다시 생성" : "생성하기"}</>
+        )}
+      </button>
+    </div>
+  );
+}
+
+function MarketingScriptTool({ projectId }: { projectId: string }) {
+  const [running, setRunning] = useState(false);
+  const [scriptText, setScriptText] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const abortRef = useRef(false);
+  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    abortRef.current = true;
+    if (pollTimerRef.current) clearTimeout(pollTimerRef.current);
+  }, []);
+
+  const handleGenerate = useCallback(async () => {
+    if (running) return;
+    setRunning(true);
+    setScriptText(null);
+    abortRef.current = false;
+
+    try {
+      const { jobId } = await startGenerateMarketingScript(projectId);
+
+      while (!abortRef.current) {
+        await new Promise<void>((resolve) => {
+          pollTimerRef.current = setTimeout(resolve, POLL_INTERVAL);
+        });
+        if (abortRef.current) break;
+
+        const result = await pollGenerateMarketingScript(projectId, jobId);
+        if (result.job.status === "done") {
+          const artifacts = (result as { artifacts?: Array<{ metadata?: string }> }).artifacts;
+          if (artifacts?.[0]?.metadata) {
+            try {
+              const parsed = typeof artifacts[0].metadata === "string"
+                ? JSON.parse(artifacts[0].metadata)
+                : artifacts[0].metadata;
+              const script = parsed?.script;
+              if (script) {
+                const lines: string[] = [];
+                if (script.hook) lines.push(`[Hook] ${script.hook}`);
+                if (script.body) lines.push(`\n${script.body}`);
+                if (script.cta) lines.push(`\n[CTA] ${script.cta}`);
+                if (script.hashtags?.length) lines.push(`\n${script.hashtags.join(" ")}`);
+                setScriptText(lines.join("\n"));
+              }
+            } catch {
+              setScriptText("스크립트 파싱 실패");
+            }
+          }
+          toast.success("마케팅 스크립트가 생성되었습니다.");
+          break;
+        }
+        if (result.job.status === "failed") {
+          throw new Error(result.job.error || "스크립트 생성 실패");
+        }
+      }
+    } catch (error) {
+      if (!abortRef.current) toast.error(error instanceof Error ? error.message : "스크립트 생성 실패");
+    } finally {
+      setRunning(false);
+    }
+  }, [projectId, running]);
+
+  const handleCopy = useCallback(async () => {
+    if (!scriptText) return;
+    await navigator.clipboard.writeText(scriptText);
+    setCopied(true);
+    toast.success("클립보드에 복사되었습니다.");
+    setTimeout(() => setCopied(false), 2000);
+  }, [scriptText]);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <FileText className={`h-5 w-5 ${WORKSPACE_TEXT.accent}`} />
+        <h3 className={`text-sm font-semibold ${WORKSPACE_TEXT.title}`}>마케팅 스크립트</h3>
+      </div>
+      {scriptText && (
+        <div className="space-y-1.5">
+          <div className="rounded-xl border border-[rgb(214_199_184_/_0.5)] bg-white/80 p-2.5">
+            <pre className="whitespace-pre-wrap text-[11px] text-[var(--takdi-text)]">{scriptText}</pre>
+          </div>
+          <button
+            type="button"
+            onClick={handleCopy}
+            className={`flex w-full items-center justify-center gap-1.5 rounded-2xl px-3 py-2 text-xs font-medium ${WORKSPACE_CONTROL.subtleButton}`}
+          >
+            {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            {copied ? "복사됨" : "복사하기"}
+          </button>
+        </div>
+      )}
+      <button
+        type="button"
+        onClick={handleGenerate}
+        disabled={running}
+        className={`flex w-full items-center justify-center gap-1.5 rounded-2xl px-3 py-2.5 text-xs font-medium ${WORKSPACE_CONTROL.accentButton} disabled:opacity-50`}
+      >
+        {running ? (
+          <><Loader2 className="h-3.5 w-3.5 animate-spin" />생성 중...</>
+        ) : (
+          <><FileText className="h-3.5 w-3.5" />{scriptText ? "다시 생성" : "생성하기"}</>
+        )}
+      </button>
+    </div>
+  );
+}

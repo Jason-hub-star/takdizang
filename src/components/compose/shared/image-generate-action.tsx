@@ -11,6 +11,7 @@ import { AppImage } from "@/components/ui/app-image";
 interface Props {
   projectId: string;
   onImageChange: (url: string) => void;
+  label?: string;
 }
 
 const POLL_INTERVAL = 2000;
@@ -22,7 +23,7 @@ const ASPECT_RATIOS = [
   { value: "9:16", label: "9:16" },
 ];
 
-export function ImageGenerateAction({ projectId, onImageChange }: Props) {
+export function ImageGenerateAction({ projectId, onImageChange, label }: Props) {
   const [open, setOpen] = useState(false);
   const [running, setRunning] = useState(false);
   const [prompt, setPrompt] = useState("");
@@ -138,7 +139,7 @@ export function ImageGenerateAction({ projectId, onImageChange }: Props) {
         className={`flex w-full items-center justify-center gap-1.5 rounded-2xl px-3 py-2 text-xs font-medium ${WORKSPACE_CONTROL.accentTint} hover:bg-[#F6DFD8]`}
       >
         <ImagePlus className="h-3.5 w-3.5" />
-        AI 이미지 생성
+        {label ?? "AI 이미지 생성"}
       </button>
     );
   }
@@ -146,7 +147,7 @@ export function ImageGenerateAction({ projectId, onImageChange }: Props) {
   return (
     <div className={`space-y-2 rounded-2xl p-3 ${WORKSPACE_SURFACE.softInset}`}>
       <div className="flex items-center justify-between">
-        <span className={`text-xs font-medium ${WORKSPACE_TEXT.accent}`}>AI 이미지 생성</span>
+        <span className={`text-xs font-medium ${WORKSPACE_TEXT.accent}`}>{label ?? "AI 이미지 생성"}</span>
         {!running && (
           <button
             type="button"

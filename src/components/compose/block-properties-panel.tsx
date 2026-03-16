@@ -1,6 +1,7 @@
 /** 블록 속성 패널 — 선택된 블록의 타입별 동적 편집 필드 (18종 블록 지원, ImagePicker + FontPicker + 블록별 컨트롤) */
 "use client";
 
+import { toast } from "sonner";
 import type { Block, TextOverlay } from "@/types/blocks";
 import { BLOCK_TYPE_LABELS } from "@/lib/constants";
 import { WORKSPACE_CONTROL, WORKSPACE_SURFACE, WORKSPACE_TEXT } from "@/lib/workspace-surface";
@@ -359,6 +360,25 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
         {/* image-text */}
         {block.type === "image-text" && (
           <div className="space-y-3">
+            <BlockTextGenerator
+              blockType="image-text"
+              onResult={(r) => {
+                const res = r as { heading?: string; body?: string };
+                onUpdate(block.id, {
+                  ...(res.heading ? { heading: res.heading } : {}),
+                  ...(res.body ? { body: res.body } : {}),
+                });
+              }}
+              renderPreview={(r) => {
+                const res = r as { heading?: string; body?: string };
+                return (
+                  <div className="space-y-1">
+                    {res.heading && <p className="font-semibold text-[var(--takdi-text)]">{res.heading}</p>}
+                    {res.body && <p className="text-[var(--takdi-text-muted)]">{res.body}</p>}
+                  </div>
+                );
+              }}
+            />
             <Field label="글꼴">
               <FontPicker
                 value={block.fontFamily ?? "default"}
@@ -447,6 +467,49 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
         {/* image-grid */}
         {block.type === "image-grid" && (
           <div className="space-y-3">
+            <BlockTextGenerator
+              blockType="image-grid"
+              onResult={(r) => {
+                const res = r as { captions?: string[] };
+                if (res.captions) {
+                  onUpdate(block.id, {
+                    images: block.images.map((img, i) => ({
+                      ...img,
+                      caption: res.captions![i] ?? img.caption,
+                    })),
+                  });
+                }
+              }}
+              renderPreview={(r) => {
+                const res = r as { captions?: string[] };
+                return (
+                  <ul className="space-y-0.5">
+                    {res.captions?.map((cap, i) => (
+                      <li key={i} className="text-[var(--takdi-text-muted)]">{i + 1}. {cap}</li>
+                    ))}
+                  </ul>
+                );
+              }}
+              label="캡션 AI 작성"
+            />
+            <ImageGenerateAction
+              projectId={projectId}
+              onImageChange={(url) => {
+                const maxImages = block.columns === 3 ? 6 : 4;
+                const emptyIdx = block.images.findIndex((img) => !img.url);
+                if (emptyIdx >= 0) {
+                  onUpdate(block.id, {
+                    images: block.images.map((img, i) => i === emptyIdx ? { ...img, url } : img),
+                  });
+                } else if (block.images.length < maxImages) {
+                  onUpdate(block.id, {
+                    images: [...block.images, { url, caption: "" }],
+                  });
+                } else {
+                  toast.info(`이미지는 최대 ${maxImages}개까지 가능합니다`);
+                }
+              }}
+            />
             <Field label="열 수">
               <select
                 value={block.columns}
@@ -550,6 +613,27 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
         {/* spec-table */}
         {block.type === "spec-table" && (
           <div className="space-y-3">
+            <BlockTextGenerator
+              blockType="spec-table"
+              onResult={(r) => {
+                const res = r as { title?: string; rows?: Array<{ label: string; value: string }> };
+                onUpdate(block.id, {
+                  ...(res.title ? { title: res.title } : {}),
+                  ...(res.rows ? { rows: res.rows } : {}),
+                });
+              }}
+              renderPreview={(r) => {
+                const res = r as { title?: string; rows?: Array<{ label: string; value: string }> };
+                return (
+                  <div className="space-y-1">
+                    {res.title && <p className="font-semibold text-[var(--takdi-text)]">{res.title}</p>}
+                    {res.rows?.map((row, i) => (
+                      <p key={i} className="text-[var(--takdi-text-muted)]">{row.label}: {row.value}</p>
+                    ))}
+                  </div>
+                );
+              }}
+            />
             <p className={`text-xs ${WORKSPACE_TEXT.muted}`}>행 {block.rows.length}개 — 아래 블록에서 직접 수정</p>
           </div>
         )}
@@ -557,6 +641,36 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
         {/* comparison */}
         {block.type === "comparison" && (
           <div className="space-y-3">
+            <BlockTextGenerator
+              blockType="comparison"
+              onResult={(r) => {
+                const res = r as { title?: string; beforeLabel?: string; afterLabel?: string };
+                onUpdate(block.id, {
+                  ...(res.title ? { title: res.title } : {}),
+                  ...(res.beforeLabel ? { before: { ...block.before, label: res.beforeLabel } } : {}),
+                  ...(res.afterLabel ? { after: { ...block.after, label: res.afterLabel } } : {}),
+                });
+              }}
+              renderPreview={(r) => {
+                const res = r as { title?: string; beforeLabel?: string; afterLabel?: string };
+                return (
+                  <div className="space-y-0.5">
+                    {res.title && <p className="font-semibold text-[var(--takdi-text)]">{res.title}</p>}
+                    <p className="text-[var(--takdi-text-muted)]">Before: {res.beforeLabel} / After: {res.afterLabel}</p>
+                  </div>
+                );
+              }}
+            />
+            <ImageGenerateAction
+              projectId={projectId}
+              onImageChange={(url) => onUpdate(block.id, { before: { ...block.before, imageUrl: url } })}
+              label="Before 이미지 AI 생성"
+            />
+            <ImageGenerateAction
+              projectId={projectId}
+              onImageChange={(url) => onUpdate(block.id, { after: { ...block.after, imageUrl: url } })}
+              label="After 이미지 AI 생성"
+            />
             <Field label="Before 이미지">
               <ImagePicker
                 projectId={projectId}
@@ -625,6 +739,27 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
         {/* cta */}
         {block.type === "cta" && (
           <div className="space-y-3">
+            <BlockTextGenerator
+              blockType="cta"
+              onResult={(r) => {
+                const res = r as { text?: string; subtext?: string; buttonLabel?: string };
+                onUpdate(block.id, {
+                  ...(res.text ? { text: res.text } : {}),
+                  ...(res.subtext ? { subtext: res.subtext } : {}),
+                  ...(res.buttonLabel ? { buttonLabel: res.buttonLabel } : {}),
+                });
+              }}
+              renderPreview={(r) => {
+                const res = r as { text?: string; subtext?: string; buttonLabel?: string };
+                return (
+                  <div className="space-y-0.5">
+                    {res.text && <p className="font-semibold text-[var(--takdi-text)]">{res.text}</p>}
+                    {res.subtext && <p className="text-[var(--takdi-text-muted)]">{res.subtext}</p>}
+                    {res.buttonLabel && <p className="text-xs text-[var(--takdi-accent)]">[{res.buttonLabel}]</p>}
+                  </div>
+                );
+              }}
+            />
             <ColorStylePicker
               label="스타일 프리셋"
               value={block.ctaStyle ?? "default"}
@@ -661,6 +796,33 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
         {/* usage-steps */}
         {block.type === "usage-steps" && (
           <div className="space-y-3">
+            <BlockTextGenerator
+              blockType="usage-steps"
+              onResult={(r) => {
+                const res = r as { title?: string; steps?: Array<{ label: string; description: string }> };
+                onUpdate(block.id, {
+                  ...(res.title ? { title: res.title } : {}),
+                  ...(res.steps ? {
+                    steps: res.steps.map((step, i) => ({
+                      imageUrl: block.steps[i]?.imageUrl ?? "",
+                      label: step.label,
+                      description: step.description,
+                    })),
+                  } : {}),
+                });
+              }}
+              renderPreview={(r) => {
+                const res = r as { title?: string; steps?: Array<{ label: string; description: string }> };
+                return (
+                  <div className="space-y-1">
+                    {res.title && <p className="font-semibold text-[var(--takdi-text)]">{res.title}</p>}
+                    {res.steps?.map((step, i) => (
+                      <p key={i} className="text-[var(--takdi-text-muted)]">{i + 1}. {step.label} — {step.description}</p>
+                    ))}
+                  </div>
+                );
+              }}
+            />
             <p className={`text-xs ${WORKSPACE_TEXT.muted}`}>
               단계 {block.steps.length}개 (최대 6개) — 아래 블록에서 직접 수정
             </p>
@@ -730,6 +892,32 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
         {/* notice */}
         {block.type === "notice" && (
           <div className="space-y-3">
+            <BlockTextGenerator
+              blockType="notice"
+              onResult={(r) => {
+                const res = r as { title?: string; items?: Array<{ text: string }> };
+                onUpdate(block.id, {
+                  ...(res.title ? { title: res.title } : {}),
+                  ...(res.items ? {
+                    items: res.items.map((item, i) => ({
+                      icon: block.items[i]?.icon ?? "info",
+                      text: item.text,
+                    })),
+                  } : {}),
+                });
+              }}
+              renderPreview={(r) => {
+                const res = r as { title?: string; items?: Array<{ text: string }> };
+                return (
+                  <div className="space-y-0.5">
+                    {res.title && <p className="font-semibold text-[var(--takdi-text)]">{res.title}</p>}
+                    {res.items?.map((item, i) => (
+                      <p key={i} className="text-[var(--takdi-text-muted)]">• {item.text}</p>
+                    ))}
+                  </div>
+                );
+              }}
+            />
             <Field label="스타일">
               <select
                 value={block.noticeStyle ?? "default"}
@@ -790,6 +978,25 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
         {/* price-promo */}
         {block.type === "price-promo" && (
           <div className="space-y-3">
+            <BlockTextGenerator
+              blockType="price-promo"
+              onResult={(r) => {
+                const res = r as { badge?: string; expiresLabel?: string };
+                onUpdate(block.id, {
+                  ...(res.badge ? { badge: res.badge } : {}),
+                  ...(res.expiresLabel ? { expiresLabel: res.expiresLabel } : {}),
+                });
+              }}
+              renderPreview={(r) => {
+                const res = r as { badge?: string; expiresLabel?: string };
+                return (
+                  <div className="space-y-0.5">
+                    {res.badge && <span className="rounded bg-red-100 px-1.5 py-0.5 text-xs font-bold text-red-600">{res.badge}</span>}
+                    {res.expiresLabel && <p className="text-[var(--takdi-text-muted)]">{res.expiresLabel}</p>}
+                  </div>
+                );
+              }}
+            />
             <p className={`text-xs ${WORKSPACE_TEXT.muted}`}>
               할인율 자동 계산 — 아래 블록에서 가격 직접 수정
             </p>
@@ -799,6 +1006,32 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
         {/* trust-badge */}
         {block.type === "trust-badge" && (
           <div className="space-y-3">
+            <BlockTextGenerator
+              blockType="trust-badge"
+              onResult={(r) => {
+                const res = r as { title?: string; badges?: Array<{ label: string }> };
+                onUpdate(block.id, {
+                  ...(res.title ? { title: res.title } : {}),
+                  ...(res.badges ? {
+                    badges: res.badges.map((badge, i) => ({
+                      icon: block.badges[i]?.icon ?? "shield",
+                      label: badge.label,
+                    })),
+                  } : {}),
+                });
+              }}
+              renderPreview={(r) => {
+                const res = r as { title?: string; badges?: Array<{ label: string }> };
+                return (
+                  <div className="space-y-0.5">
+                    {res.title && <p className="font-semibold text-[var(--takdi-text)]">{res.title}</p>}
+                    {res.badges?.map((badge, i) => (
+                      <span key={i} className="mr-1 inline-block rounded-full bg-green-50 px-2 py-0.5 text-xs text-green-700">{badge.label}</span>
+                    ))}
+                  </div>
+                );
+              }}
+            />
             <p className={`text-xs ${WORKSPACE_TEXT.muted}`}>
               뱃지 {block.badges.length}개 (최대 8개) — 아래 블록에서 직접 수정
             </p>

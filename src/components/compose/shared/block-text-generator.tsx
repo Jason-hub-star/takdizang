@@ -1,8 +1,8 @@
-/** BlockTextGenerator - 블록별 AI 문구 생성 확장 패널 (톤 프리셋 + 프롬프트 + 미리보기 + 재생성) */
+/** BlockTextGenerator - 블록별 AI 문구 생성 (원클릭 생성 → 미리보기 → 적용, 설정 패널 옵션) */
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Sparkles, Loader2, X, RefreshCw, Check } from "lucide-react";
+import { Sparkles, Loader2, X, RefreshCw, Check, Settings2 } from "lucide-react";
 import { toast } from "sonner";
 import { useCompose } from "../compose-context";
 import { generateBlockText } from "@/lib/api-client";
@@ -32,11 +32,11 @@ export function BlockTextGenerator({
   label = "AI로 작성",
 }: BlockTextGeneratorProps) {
   const { projectId } = useCompose();
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [userPrompt, setUserPrompt] = useState("");
   const [selectedTone, setSelectedTone] = useState<string | null>(null);
   const [preview, setPreview] = useState<Record<string, unknown> | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   async function handleGenerate() {
     if (loading) return;
@@ -61,7 +61,7 @@ export function BlockTextGenerator({
     onResult(preview);
     toast.success("AI 문구가 적용되었습니다");
     setPreview(null);
-    setOpen(false);
+    setSettingsOpen(false);
   }
 
   function handleRegenerate() {
@@ -69,11 +69,17 @@ export function BlockTextGenerator({
     handleGenerate();
   }
 
-  if (!open) {
+  function handleQuickGenerate() {
+    if (loading) return;
+    handleGenerate();
+  }
+
+  /* idle state: show button — click triggers immediate generation */
+  if (!preview && !loading && !settingsOpen) {
     return (
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={handleQuickGenerate}
         className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${WORKSPACE_CONTROL.accentTint} hover:bg-[rgb(246_223_216_/_0.9)]`}
       >
         <Sparkles className={`h-3.5 w-3.5 ${WORKSPACE_TEXT.accent}`} />
@@ -82,14 +88,25 @@ export function BlockTextGenerator({
     );
   }
 
+  /* loading state without preview: show spinner inline */
+  if (loading && !preview && !settingsOpen) {
+    return (
+      <div className={`flex items-center gap-2 rounded-2xl p-3 ${WORKSPACE_SURFACE.softInset}`}>
+        <Loader2 className={`h-3.5 w-3.5 animate-spin ${WORKSPACE_TEXT.accent}`} />
+        <span className={`text-xs ${WORKSPACE_TEXT.muted}`}>AI 문구 생성 중...</span>
+      </div>
+    );
+  }
+
   return (
     <div className={`space-y-2.5 rounded-2xl p-3 ${WORKSPACE_SURFACE.softInset}`}>
+      {/* Header */}
       <div className="flex items-center justify-between">
         <span className={`text-xs font-medium ${WORKSPACE_TEXT.accent}`}>AI 문구 생성</span>
         {!loading && (
           <button
             type="button"
-            onClick={() => { setOpen(false); setPreview(null); }}
+            onClick={() => { setPreview(null); setSettingsOpen(false); }}
             className={`text-[10px] ${WORKSPACE_TEXT.muted} hover:text-[#4D433D]`}
           >
             <X className="h-3.5 w-3.5" />
@@ -97,42 +114,43 @@ export function BlockTextGenerator({
         )}
       </div>
 
-      {/* Tone presets */}
-      <div className="flex flex-wrap gap-1">
-        {TONE_PRESETS.map((tone) => (
-          <button
-            key={tone.value}
-            type="button"
-            onClick={() => setSelectedTone(selectedTone === tone.value ? null : tone.value)}
+      {/* Settings panel (collapsed by default) */}
+      {settingsOpen && (
+        <>
+          <div className="flex flex-wrap gap-1">
+            {TONE_PRESETS.map((tone) => (
+              <button
+                key={tone.value}
+                type="button"
+                onClick={() => setSelectedTone(selectedTone === tone.value ? null : tone.value)}
+                disabled={loading}
+                className={`rounded-full px-2.5 py-1 text-[10px] font-medium transition-colors ${
+                  selectedTone === tone.value
+                    ? WORKSPACE_CONTROL.accentButton
+                    : `${WORKSPACE_CONTROL.subtleButton} shadow-none`
+                }`}
+              >
+                {tone.label}
+              </button>
+            ))}
+          </div>
+
+          <input
+            type="text"
+            placeholder="원하는 스타일이나 방향을 입력하세요"
+            value={userPrompt}
+            onChange={(e) => setUserPrompt(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !loading) handleGenerate();
+            }}
             disabled={loading}
-            className={`rounded-full px-2.5 py-1 text-[10px] font-medium transition-colors ${
-              selectedTone === tone.value
-                ? WORKSPACE_CONTROL.accentButton
-                : `${WORKSPACE_CONTROL.subtleButton} shadow-none`
-            }`}
-          >
-            {tone.label}
-          </button>
-        ))}
-      </div>
+            className={`w-full rounded-2xl px-3 py-2 text-xs ${WORKSPACE_CONTROL.input}`}
+          />
+        </>
+      )}
 
-      {/* User prompt input */}
-      <input
-        type="text"
-        placeholder="원하는 스타일이나 방향을 입력하세요"
-        value={userPrompt}
-        onChange={(e) => setUserPrompt(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !loading) {
-            handleGenerate();
-          }
-        }}
-        disabled={loading}
-        className={`w-full rounded-2xl px-3 py-2 text-xs ${WORKSPACE_CONTROL.input}`}
-      />
-
-      {/* Generate button */}
-      {!preview && (
+      {/* Generate button when settings are open but no preview yet */}
+      {settingsOpen && !preview && (
         <button
           type="button"
           onClick={handleGenerate}
@@ -156,7 +174,7 @@ export function BlockTextGenerator({
       {/* Preview */}
       {preview && (
         <div className="space-y-2">
-          <div className={`rounded-xl border border-[rgb(214_199_184_/_0.5)] bg-white/80 p-2.5 text-xs`}>
+          <div className="rounded-xl border border-[rgb(214_199_184_/_0.5)] bg-white/80 p-2.5 text-xs">
             {renderPreview ? renderPreview(preview) : (
               <pre className="whitespace-pre-wrap text-[11px] text-[var(--takdi-text)]">
                 {JSON.stringify(preview, null, 2)}
@@ -187,6 +205,18 @@ export function BlockTextGenerator({
               다시 생성
             </button>
           </div>
+
+          {/* Open settings toggle */}
+          {!settingsOpen && (
+            <button
+              type="button"
+              onClick={() => setSettingsOpen(true)}
+              className={`flex w-full items-center justify-center gap-1 rounded-2xl px-3 py-1.5 text-[10px] ${WORKSPACE_TEXT.muted} hover:text-[#4D433D]`}
+            >
+              <Settings2 className="h-3 w-3" />
+              톤/프롬프트 설정
+            </button>
+          )}
         </div>
       )}
     </div>

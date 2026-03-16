@@ -1,6 +1,6 @@
 # Feature Matrix
 
-Last Updated: 2026-03-16 (KST, 컴포즈 AI 생성 허브 통합)
+Last Updated: 2026-03-16 (KST, 컴포즈 블록별 AI 생성 UX 리팩토링)
 Status enum: `Not Started | In Progress | Done | Blocked | Deferred`
 
 | ID | Feature | Status | Owner | Notes |
@@ -27,12 +27,26 @@ Status enum: `Not Started | In Progress | Done | Blocked | Deferred`
 | UI-004 | Mode card spacing/height fix | Done | claude | min-h-[168px], p-6, max 4열 그리드 |
 | UI-005 | Settings SummaryCard height uniformity | Done | claude | min-h-[140px] 추가 |
 | COMPOSE-001 | Workspace asset browser | Done | claude | `GET /api/workspace/assets` + AssetGrid scope 모드 |
-| COMPOSE-002 | Block-level AI text generation | Done | claude | 5개 블록 타입 × Gemini 전용 프롬프트 |
+| COMPOSE-002 | Block-level AI text generation | Done | claude | 15개 블록 타입 × Gemini 전용 프롬프트 (기존 5 + 신규 10) |
 | COMPOSE-003 | Model compose in-block integration | Done | claude | ModelComposeAction → hero/image-full/image-text |
 | COMPOSE-004 | Remove-bg in-block integration | Done | claude | RemoveBgAction → hero/image-full/image-text |
 | COMPOSE-005 | Product URL auto-fill | Not Started | unassigned | URL → 상품 정보 크롤링 → 블록 자동 채움 |
 | COMPOSE-006 | Version history | Not Started | unassigned | 저장 이력 비교/복원 |
 | COMPOSE-007 | Block text generation UX (tone/prompt/preview) | Done | claude | 톤 프리셋 5종 + 자유 프롬프트 + 미리보기/재생성 플로우 |
 | COMPOSE-008 | Model compose prompt input | Done | claude | 스타일/포즈 프롬프트 입력 → briefText와 결합 |
-| COMPOSE-009 | AI image generation in-block | Done | claude | ImageGenerateAction → hero/image-full/image-text |
-| COMPOSE-010 | AI Hub right panel (tab split) | Done | claude | 속성/AI허브 탭, 이미지·영상·썸네일·스크립트 4섹션 + status 가드 |
+| COMPOSE-009 | AI image generation in-block | Done | claude | ImageGenerateAction → hero/image-full/image-text + image-grid/comparison |
+| COMPOSE-010 | AI Hub → inline + toolbar refactor | Done | claude | AI 허브 탭 제거, 블록 인라인 AI + 툴바 AI 도구 드롭다운/모달 |
+| COMPOSE-011 | One-click AI text generation | Done | claude | 원클릭 즉시 생성 → 미리보기 → 적용 (5단계→2단계) |
+| SCHEMA-001 | TEXT→JSONB migration | Done | claude | content, input, output, metadata, snapshot, detail → JSONB + GIN indexes |
+| SCHEMA-002 | CHECK constraints | Done | claude | project status/mode, job status 표준화 |
+| SCHEMA-003 | Composite indexes + updated_at | Done | claude | 4개 테이블 updated_at 추가, 3개 복합 인덱스 |
+| AUTH-001 | Auth schema (profiles + workspace_members) | Done | claude | profiles, workspace_members, auto-provisioning trigger |
+| AUTH-002 | Supabase SSR auth clients | Done | claude | server.ts, browser.ts + @supabase/ssr 패키지 |
+| AUTH-003 | Next.js middleware (session guard) | Done | claude | 미인증 → /login redirect, public 경로 허용 |
+| AUTH-004 | Login/signup pages | Done | claude | email/password + Google OAuth, (auth) route group |
+| AUTH-005 | workspace-guard async rewrite | Done | claude | getAuthContext() 기반, 24+ API route await 전환 |
+| AUTH-006 | RLS policies | Done | claude | 9개 테이블 RLS, get_my_workspace_ids() 헬퍼, (select auth.uid()) 패턴 |
+| AUTH-007 | /uploads auth protection | Done | claude | 세션 체크 추가 |
+| AUTH-008 | Sidebar profile + logout | Done | claude | 아바타/이름 표시, 로그아웃 버튼 |
+| USAGE-001 | Usage limit guard | Done | claude | 월간 사용량 체크, free-tier 한도 |
+| JSONB-001 | JSON.parse/stringify JSONB compatibility | Done | claude | parseJsonField 유틸 + 20+ 파일 안전 파싱 전환 |

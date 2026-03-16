@@ -1,17 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useRef, useEffect } from "react";
 import {
   Bookmark,
   Download,
   ExternalLink,
   Eye,
+  Film,
+  Image as ImageIcon,
+  FileText,
   LayoutTemplate,
   Loader2,
   Monitor,
   Save,
   ShieldCheck,
   Smartphone,
+  Sparkles,
   Wrench,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -35,6 +40,10 @@ interface ComposeToolbarProps {
   onAiGenerate?: () => void;
   onDesignCheck?: () => void;
   onAutoFixAll?: () => void;
+  onAiVideoRender?: () => void;
+  onAiThumbnail?: () => void;
+  onAiScript?: () => void;
+  aiToolsEnabled?: boolean;
   mobilePreview?: boolean;
   onMobilePreviewToggle?: () => void;
   isSaving: boolean;
@@ -58,6 +67,10 @@ export function ComposeToolbar({
   onAiGenerate,
   onDesignCheck,
   onAutoFixAll,
+  onAiVideoRender,
+  onAiThumbnail,
+  onAiScript,
+  aiToolsEnabled,
   mobilePreview,
   onMobilePreviewToggle,
   isSaving,
@@ -123,6 +136,13 @@ export function ComposeToolbar({
             <LayoutTemplate className="h-3.5 w-3.5" />
             {messages.common.actions.templates}
           </Button>
+        )}
+        {aiToolsEnabled && (onAiVideoRender || onAiThumbnail || onAiScript) && (
+          <AiToolsDropdown
+            onVideoRender={onAiVideoRender}
+            onThumbnail={onAiThumbnail}
+            onScript={onAiScript}
+          />
         )}
         {onDesignCheck && (
           <Button
@@ -210,6 +230,76 @@ export function ComposeToolbar({
           {messages.common.actions.export}
         </Button>
       </div>
+    </div>
+  );
+}
+
+function AiToolsDropdown({
+  onVideoRender,
+  onThumbnail,
+  onScript,
+}: {
+  onVideoRender?: () => void;
+  onThumbnail?: () => void;
+  onScript?: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setOpen((prev) => !prev)}
+        className={`flex items-center gap-1 rounded-2xl text-xs ${WORKSPACE_TEXT.accent} hover:text-[#CF705A]`}
+      >
+        <Sparkles className="h-3.5 w-3.5" />
+        AI 도구
+      </Button>
+      {open && (
+        <div className={`absolute right-0 top-full z-50 mt-1 w-48 rounded-2xl border border-[rgb(214_199_184_/_0.55)] ${WORKSPACE_SURFACE.panelStrong} shadow-lg`}>
+          {onVideoRender && (
+            <button
+              type="button"
+              onClick={() => { onVideoRender(); setOpen(false); }}
+              className={`flex w-full items-center gap-2 px-4 py-2.5 text-left text-xs transition-colors hover:bg-[rgb(246_238_230_/_0.5)] ${WORKSPACE_TEXT.body}`}
+            >
+              <Film className="h-3.5 w-3.5" />
+              영상 렌더링
+            </button>
+          )}
+          {onThumbnail && (
+            <button
+              type="button"
+              onClick={() => { onThumbnail(); setOpen(false); }}
+              className={`flex w-full items-center gap-2 px-4 py-2.5 text-left text-xs transition-colors hover:bg-[rgb(246_238_230_/_0.5)] ${WORKSPACE_TEXT.body}`}
+            >
+              <ImageIcon className="h-3.5 w-3.5" />
+              썸네일 생성
+            </button>
+          )}
+          {onScript && (
+            <button
+              type="button"
+              onClick={() => { onScript(); setOpen(false); }}
+              className={`flex w-full items-center gap-2 px-4 py-2.5 text-left text-xs transition-colors hover:bg-[rgb(246_238_230_/_0.5)] ${WORKSPACE_TEXT.body}`}
+            >
+              <FileText className="h-3.5 w-3.5" />
+              마케팅 스크립트
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

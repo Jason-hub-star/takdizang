@@ -37,6 +37,7 @@ import { LeaveComposeDialog } from "./leave-compose-dialog";
 import { SaveTemplateDialog } from "./save-template-dialog";
 import { validateBlocks, autoFixAllBlocks } from "@/lib/design-guardrails";
 import { BLOCK_TEMPLATES } from "./block-palette";
+import { AiToolDialog } from "./ai-tool-dialog";
 import { WORKSPACE_SURFACE, WORKSPACE_TEXT } from "@/lib/workspace-surface";
 
 const UNDO_COALESCE_MS = 400;
@@ -73,7 +74,7 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [mobilePreview, setMobilePreview] = useState(false);
   const [draggingLabel, setDraggingLabel] = useState<string | null>(null);
-  const [activeRightTab, setActiveRightTab] = useState<"properties" | "ai-hub">("properties");
+  const [aiToolType, setAiToolType] = useState<"video" | "thumbnail" | "script" | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const sensors = useSensors(
@@ -511,6 +512,10 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
             onAiGenerate={() => setBriefOpen(true)}
             onDesignCheck={handleDesignCheck}
             onAutoFixAll={handleAutoFixAll}
+            onAiVideoRender={() => setAiToolType("video")}
+            onAiThumbnail={() => setAiToolType("thumbnail")}
+            onAiScript={() => setAiToolType("script")}
+            aiToolsEnabled={projectStatus === "generated" || projectStatus === "exported"}
             mobilePreview={mobilePreview}
             onMobilePreviewToggle={() => setMobilePreview((prev) => !prev)}
             isSaving={saving}
@@ -539,12 +544,8 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
             />
 
             <RightPanel
-              activeTab={activeRightTab}
-              onTabChange={setActiveRightTab}
               block={selectedBlock}
               onUpdate={handleUpdateBlock}
-              projectId={projectId}
-              projectStatus={projectStatus}
             />
           </div>
         </div>
@@ -579,6 +580,12 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
         saving={templateSaving}
         onClose={() => setSaveTemplateOpen(false)}
         onSubmit={(name) => void handleSaveTemplate(name)}
+      />
+      <AiToolDialog
+        open={aiToolType !== null}
+        toolType={aiToolType}
+        projectId={projectId}
+        onClose={() => setAiToolType(null)}
       />
       <LeaveComposeDialog
         open={leaveOpen}
