@@ -7,7 +7,7 @@ UI 컴포넌트 루트 — 하위 폴더별로 기능 단위 분리.
 - `home/` — Home 화면 전용 컴포넌트
 - `editor/` — 노드 에디터 전용 컴포넌트
 - `preview/` — 영상 프리뷰 컴포넌트 (Remotion Player)
-- `compose/` — 상세페이지 블록 에디터 컴포넌트 (dnd-kit, 13종 블록)
+- `compose/` — 상세페이지 블록 에디터 컴포넌트 (dnd-kit, 18종 블록, AI 문구/모델컷/누끼 통합)
 
 ## Convention
 - 새 컴포넌트는 기능별 하위 폴더에 배치

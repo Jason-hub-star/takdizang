@@ -72,8 +72,13 @@
 - Compose
   - `GET /api/projects/[id]/blocks`
   - `PUT /api/projects/[id]/blocks`
+  - `POST /api/projects/[id]/generate-block-text` — 블록 타입별 AI 문구 생성
   - `GET /api/compose-templates`
   - `POST /api/compose-templates`
   - `GET /api/compose-templates/[id]`
   - `DELETE /api/compose-templates/[id]`
   - `POST /api/compose-templates/[id]/instantiate`
+- Workspace
+  - `GET /api/workspace/assets` — 워크스페이스 전체 에셋 조회 (프로젝트별 그룹)
+- Usage
+  - `GET /api/usage/me` — 현재 워크스페이스 사용량 조회

@@ -15,6 +15,8 @@ Next.js App Router routes, pages, and API handlers.
 ## API Notes
 - `api/projects/[id]/thumbnail/`: shortform preview thumbnail generation
 - `api/projects/[id]/marketing-script/`: shortform preview marketing-script generation
+- `api/projects/[id]/generate-block-text/`: 블록 타입별 AI 문구 생성 (text-block, selling-point, review, faq, banner-strip)
+- `api/workspace/assets/`: 워크스페이스 전체 에셋 조회 (프로젝트별 그룹)
 - Async API pattern stays `POST -> 202 + jobId`, `GET -> poll`
 
 ## Convention

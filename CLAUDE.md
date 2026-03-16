@@ -3,7 +3,7 @@
 Automation-first documentation index for Takdizang.
 
 ## Repo Boundary
-- Write repo: `C:\Users\gmdqn\takdizang`
+- Write repo: `C:\Users\ezen601\Desktop\Jason\takdizang`
 
 ## Context Loading Order
 1. `CLAUDE.md` (this file)

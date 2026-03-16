@@ -1,22 +1,34 @@
 # Feature Matrix
 
-Last Updated: 2026-03-15 (KST, Supabase storage migration + docs process import)
+Last Updated: 2026-03-16 (KST, UI 완성도 개선 + 컴포즈 에디터 크로스모드 통합)
 Status enum: `Not Started | In Progress | Done | Blocked | Deferred`
 
 | ID | Feature | Status | Owner | Notes |
 |---|---|---|---|---|
-| DOCS-001 | Takdi-style docs process import | Done | codex | Root `CLAUDE.md` + `docs/status` + `docs/ref` added for Takdizang |
-| INFRA-001 | Takdi UI/route copy into separate repo | Done | codex | Public repo keeps Takdi screens and route structure while reserving `/landing` |
-| INFRA-002 | Supabase-backed Prisma compatibility adapter | Done | codex | `src/lib/prisma.ts` now maps copied app data access onto Supabase |
-| INFRA-003 | Prisma removal from runtime | Done | codex | Runtime uses Supabase directly; Prisma is no longer part of active app persistence |
-| INFRA-004 | Ollama removal | Done | codex | Local LLM dependency removed from Takdizang |
-| INFRA-005 | ComfyUI removal | Done | codex | Local image provider stack removed from Takdizang |
-| INFRA-006 | Kie-only image provider registry | Done | codex | Provider registry now favors Kie for image generation/background flows |
-| INFRA-007 | Supabase storage buckets | Done | codex | Added `project-assets`, `artifacts`, `thumbnails` bucket bootstrap migration |
-| INFRA-008 | `/uploads` proxy over Supabase Storage | Done | codex | Existing UI still consumes `/uploads/...` while backend serves from Storage |
-| INFRA-009 | Project deletion storage cleanup | Done | codex | DB delete now clears storage prefix after relational cleanup |
-| QA-001 | Storage smoke test | Done | codex | Project create/upload/view/delete validated against Supabase Storage |
+| DOCS-001 | Takdi-style docs process import | Done | codex | Root `CLAUDE.md` + `docs/status` + `docs/ref` added |
+| INFRA-001 | Takdi UI/route copy into separate repo | Done | codex | Public repo keeps Takdi screens and route structure |
+| INFRA-002 | Supabase-backed Prisma compatibility adapter | Done | codex | `src/lib/prisma.ts` maps Prisma API onto Supabase |
+| INFRA-003 | Prisma removal from runtime | Done | codex | Runtime uses Supabase directly |
+| INFRA-004 | Ollama removal | Done | codex | Local LLM dependency removed |
+| INFRA-005 | ComfyUI removal | Done | codex | Local image provider stack removed |
+| INFRA-006 | Kie-only image provider registry | Done | codex | Provider registry favors Kie for image generation |
+| INFRA-007 | Supabase storage buckets | Done | codex | `project-assets`, `artifacts`, `thumbnails` buckets |
+| INFRA-008 | `/uploads` proxy over Supabase Storage | Done | codex | UI consumes `/uploads/...`, backend serves from Storage |
+| INFRA-009 | Project deletion storage cleanup | Done | codex | DB delete clears storage prefix |
+| QA-001 | Storage smoke test | Done | codex | Project create/upload/view/delete validated |
 | QA-002 | Thumbnail artifact smoke | Blocked | codex | Blocked by Kie credit insufficiency |
 | QA-003 | Marketing-script artifact smoke | Blocked | codex | Blocked by leaked/disabled Gemini API key |
-| QA-004 | Export artifact smoke | In Progress | codex | Waiting on upstream thumbnail/script providers to complete full artifact set |
-| LANDING-001 | Custom marketing landing page | Deferred | unassigned | `/landing` intentionally left open for later design work |
+| QA-004 | Export artifact smoke | In Progress | codex | Waiting on upstream providers |
+| QA-005 | Playwright visual regression tests | Done | claude | 4 pages × 3 viewports, baseline snapshots saved |
+| LANDING-001 | Custom marketing landing page | Deferred | unassigned | `/landing` intentionally left open |
+| UI-001 | DB seed data insertion | Done | claude | 8 projects + 10 assets + 3 templates + 12 usage + 4 jobs + 3 exports |
+| UI-002 | Landing page text improvement | Done | claude | 개발자 placeholder → 사용자 대상 소개 문구 |
+| UI-003 | Sidebar Mac Mini+NAS card removal | Done | claude | 불필요한 인프라 카드 제거 |
+| UI-004 | Mode card spacing/height fix | Done | claude | min-h-[168px], p-6, max 4열 그리드 |
+| UI-005 | Settings SummaryCard height uniformity | Done | claude | min-h-[140px] 추가 |
+| COMPOSE-001 | Workspace asset browser | Done | claude | `GET /api/workspace/assets` + AssetGrid scope 모드 |
+| COMPOSE-002 | Block-level AI text generation | Done | claude | 5개 블록 타입 × Gemini 전용 프롬프트 |
+| COMPOSE-003 | Model compose in-block integration | Done | claude | ModelComposeAction → hero/image-full/image-text |
+| COMPOSE-004 | Remove-bg in-block integration | Done | claude | RemoveBgAction → hero/image-full/image-text |
+| COMPOSE-005 | Product URL auto-fill | Not Started | unassigned | URL → 상품 정보 크롤링 → 블록 자동 채움 |
+| COMPOSE-006 | Version history | Not Started | unassigned | 저장 이력 비교/복원 |
