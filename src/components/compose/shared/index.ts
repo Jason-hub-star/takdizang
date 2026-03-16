@@ -6,4 +6,6 @@ export { ColorStylePicker } from "./color-style-picker";
 export { AssetGrid } from "./asset-grid";
 export { ImageFilterControls, buildFilterStyle } from "./image-filter-controls";
 export { SceneComposeAction } from "./scene-compose-action";
+export { ModelComposeAction } from "./model-compose-action";
+export { RemoveBgAction } from "./remove-bg-action";
 export { FontPicker } from "./font-picker";

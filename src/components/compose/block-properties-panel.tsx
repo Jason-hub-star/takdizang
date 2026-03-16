@@ -6,7 +6,7 @@ import { BLOCK_TYPE_LABELS } from "@/lib/constants";
 import { WORKSPACE_CONTROL, WORKSPACE_SURFACE, WORKSPACE_TEXT } from "@/lib/workspace-surface";
 import { useCompose } from "./compose-context";
 import { ImagePicker } from "./image-picker";
-import { ColorStylePicker, ImageFilterControls, SceneComposeAction, FontPicker } from "./shared";
+import { ColorStylePicker, ImageFilterControls, SceneComposeAction, ModelComposeAction, RemoveBgAction, FontPicker } from "./shared";
 import { BlockTextGenerator } from "./shared/block-text-generator";
 import { Plus, Trash2 } from "lucide-react";
 
@@ -96,6 +96,16 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
               onChange={(f) => onUpdate(block.id, { imageFilters: f })}
             />
             <SceneComposeAction
+              projectId={projectId}
+              imageUrl={block.imageUrl}
+              onImageChange={(url) => onUpdate(block.id, { imageUrl: url })}
+            />
+            <ModelComposeAction
+              projectId={projectId}
+              imageUrl={block.imageUrl}
+              onImageChange={(url) => onUpdate(block.id, { imageUrl: url })}
+            />
+            <RemoveBgAction
               projectId={projectId}
               imageUrl={block.imageUrl}
               onImageChange={(url) => onUpdate(block.id, { imageUrl: url })}
@@ -368,6 +378,16 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
               imageUrl={block.imageUrl}
               onImageChange={(url) => onUpdate(block.id, { imageUrl: url })}
             />
+            <ModelComposeAction
+              projectId={projectId}
+              imageUrl={block.imageUrl}
+              onImageChange={(url) => onUpdate(block.id, { imageUrl: url })}
+            />
+            <RemoveBgAction
+              projectId={projectId}
+              imageUrl={block.imageUrl}
+              onImageChange={(url) => onUpdate(block.id, { imageUrl: url })}
+            />
           </div>
         )}
 
@@ -386,6 +406,16 @@ export function BlockPropertiesPanel({ block, onUpdate }: BlockPropertiesPanelPr
               onChange={(f) => onUpdate(block.id, { imageFilters: f })}
             />
             <SceneComposeAction
+              projectId={projectId}
+              imageUrl={block.imageUrl}
+              onImageChange={(url) => onUpdate(block.id, { imageUrl: url })}
+            />
+            <ModelComposeAction
+              projectId={projectId}
+              imageUrl={block.imageUrl}
+              onImageChange={(url) => onUpdate(block.id, { imageUrl: url })}
+            />
+            <RemoveBgAction
               projectId={projectId}
               imageUrl={block.imageUrl}
               onImageChange={(url) => onUpdate(block.id, { imageUrl: url })}
