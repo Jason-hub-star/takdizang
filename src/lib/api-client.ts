@@ -282,6 +282,19 @@ export function uploadAsset(
   );
 }
 
+// --- Workspace assets ---
+
+export interface WorkspaceAssetGroup {
+  projectId: string;
+  projectName: string;
+  projectMode: string | null;
+  assets: AssetRecord[];
+}
+
+export function getWorkspaceAssets() {
+  return get<{ groups: WorkspaceAssetGroup[] }>("/api/workspace/assets");
+}
+
 // --- BGM ---
 
 export function uploadBgm(projectId: string, file: File) {
