@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { parseJsonField } from "@/lib/json";
+import { ensureWorkspaceScope, AuthError } from "@/lib/workspace-guard";
 import type { BlockDocument } from "@/types/blocks";
 import { listProjectArtifacts } from "@/lib/project-media";
 import type { ExportArtifactRecord } from "@/lib/api-client";
@@ -12,7 +14,7 @@ function toClientArtifact(artifact: {
   id: string;
   type: string;
   filePath: string;
-  metadata: string | null;
+  metadata: string | object | null;
   createdAt: Date;
 }): ExportArtifactRecord {
   return {
@@ -52,23 +54,26 @@ export default async function ResultPage({
 
   const project = await prisma.project.findUnique({
     where: { id },
-    select: { id: true, name: true, content: true, mode: true },
+    select: { id: true, name: true, content: true, mode: true, workspaceId: true },
   });
 
   if (!project) {
     notFound();
   }
 
+  try {
+    await ensureWorkspaceScope(project.workspaceId as string);
+  } catch (err) {
+    if (err instanceof AuthError) redirect("/login");
+    notFound();
+  }
+
   if (project.mode === "compose") {
     let doc: BlockDocument | null = null;
     if (project.content) {
-      try {
-        const parsed = JSON.parse(project.content);
-        if (parsed.format === "blocks") {
-          doc = parsed as BlockDocument;
-        }
-      } catch {
-        // ignore invalid content
+      const parsed = parseJsonField<BlockDocument>(project.content);
+      if (parsed && parsed.format === "blocks") {
+        doc = parsed;
       }
     }
 

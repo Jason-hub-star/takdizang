@@ -29,7 +29,7 @@ export async function GET(
     }
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
@@ -86,7 +86,7 @@ export async function POST(
     }
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }

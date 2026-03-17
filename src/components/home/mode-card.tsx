@@ -196,7 +196,7 @@ export function ModeCard({
       onClick={handleClick}
       disabled={loading}
       className={cn(
-        "group relative flex min-h-[154px] min-w-40 flex-col overflow-hidden rounded-[1.8rem] border border-[rgb(219_206_191_/_0.92)] p-5",
+        "group relative flex min-h-[168px] min-w-40 flex-col overflow-hidden rounded-[1.8rem] border border-[rgb(219_206_191_/_0.92)] p-6",
         "shadow-[0_18px_36px_rgba(80,54,34,0.06)]",
         "transition-all duration-200 hover:-translate-y-1 hover:border-[rgb(208_190_171_/_0.98)] hover:shadow-[0_24px_48px_rgba(80,54,34,0.09)]",
         style.surface,

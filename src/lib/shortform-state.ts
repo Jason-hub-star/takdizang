@@ -1,4 +1,5 @@
 import type { Edge, Node } from "@xyflow/react";
+import { parseJsonField } from "@/lib/json";
 import type {
   GenerationResultSection,
   ShortformCut,
@@ -159,17 +160,13 @@ export function createShortformState(sections: GenerationResultSection[] = []): 
   };
 }
 
-export function parseProjectContentEnvelope(content?: string | null): ProjectContentEnvelope | null {
+export function parseProjectContentEnvelope(content?: string | object | null): ProjectContentEnvelope | null {
   if (!content) {
     return null;
   }
 
-  try {
-    const parsed = JSON.parse(content) as unknown;
-    return isRecord(parsed) ? (parsed as ProjectContentEnvelope) : null;
-  } catch {
-    return null;
-  }
+  const parsed = parseJsonField<unknown>(content);
+  return isRecord(parsed) ? (parsed as ProjectContentEnvelope) : null;
 }
 
 export function getShortformStateFromContent(content?: string | null): ShortformProjectState | null {

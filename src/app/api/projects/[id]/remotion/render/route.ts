@@ -3,6 +3,7 @@ import path from "path";
 import { spawn } from "child_process";
 import { prisma } from "@/lib/prisma";
 import { getWorkspaceId, ensureWorkspaceScope } from "@/lib/workspace-guard";
+import { checkUsageLimit, UsageLimitError } from "@/lib/usage-guard";
 import { jsonOk, jsonError, jsonNotFound } from "@/lib/api-response";
 import { resolveShortformInputProps } from "@/lib/project-media";
 import {
@@ -28,7 +29,8 @@ export async function POST(
   try {
     const { id } = await params;
     const body = await request.json().catch(() => ({}));
-    const workspaceId = getWorkspaceId();
+    const workspaceId = await getWorkspaceId();
+    await checkUsageLimit(workspaceId, "export_start");
 
     const project = await prisma.project.findUnique({
       where: { id },
@@ -44,7 +46,7 @@ export async function POST(
     if (!project) return jsonNotFound("Project");
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
@@ -64,7 +66,7 @@ export async function POST(
           projectId: id,
           status: "queued",
           provider: "remotion",
-          input: JSON.stringify({ targets }),
+          input: { targets },
         },
       });
 
@@ -72,7 +74,7 @@ export async function POST(
         data: {
           workspaceId,
           eventType: "render_start",
-          detail: JSON.stringify({ projectId: id, jobId: renderJob.id, targets }),
+          detail: { projectId: id, jobId: renderJob.id, targets },
         },
       });
 
@@ -85,6 +87,9 @@ export async function POST(
 
     return jsonOk({ jobId: job.id, status: "queued" }, 202);
   } catch (error) {
+    if (error instanceof UsageLimitError) {
+      return jsonError(error.message, 429);
+    }
     console.error("POST /api/projects/[id]/remotion/render error:", error);
     return jsonError("Internal server error", 500);
   }
@@ -134,7 +139,7 @@ async function processRender(
           projectId: project.id,
           type: "video",
           filePath: publicFilePath,
-          metadata: JSON.stringify({ compositionId, templateKey }),
+          metadata: { compositionId, templateKey },
         },
       });
       artifactIds.push(artifact.id);
@@ -171,7 +176,7 @@ async function processRender(
         where: { id: jobId },
         data: {
           status: "done",
-          output: JSON.stringify({ artifactIds }),
+          output: { artifactIds },
           doneAt: new Date(),
         },
       });
@@ -180,7 +185,7 @@ async function processRender(
         data: {
           workspaceId,
           eventType: "render_complete",
-          detail: JSON.stringify({ projectId: project.id, jobId, artifactIds }),
+          detail: { projectId: project.id, jobId, artifactIds },
         },
       });
     });

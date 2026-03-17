@@ -115,10 +115,19 @@ export async function generateImageWithKie(
 /**
  * Download an image URL and return base64 + mimeType.
  * Compatible with saveGeneratedImage interface.
+ * Supports data URIs (from MockProvider) without network fetch.
  */
 export async function downloadImageAsBase64(
   url: string,
 ): Promise<{ imageBytes: string; mimeType: string }> {
+  // Handle data URIs directly (e.g. from mock provider)
+  if (url.startsWith("data:")) {
+    const match = url.match(/^data:([^;]+);base64,(.+)$/);
+    if (match) {
+      return { mimeType: match[1], imageBytes: match[2] };
+    }
+  }
+
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Image download failed: ${res.status}`);
 

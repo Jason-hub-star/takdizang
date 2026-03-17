@@ -1,7 +1,9 @@
 /** Workspace home with compact mode shortcuts, recent projects, and saved templates. */
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { AppLayout } from "@/components/layout/app-layout";
+import { AuthError } from "@/lib/workspace-guard";
 import { HomeStartGrid } from "@/components/home/home-start-grid";
 import { RecentProjects } from "@/components/home/recent-projects";
 import { SavedTemplates } from "@/components/home/saved-templates";
@@ -12,7 +14,14 @@ export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const messages = getMessages();
-  const { projects, templates } = await getHomeFeed();
+  let feed;
+  try {
+    feed = await getHomeFeed();
+  } catch (err) {
+    if (err instanceof AuthError) redirect("/login");
+    throw err;
+  }
+  const { projects, templates } = feed;
 
   return (
     <AppLayout>

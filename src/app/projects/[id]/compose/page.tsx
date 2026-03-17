@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { parseJsonField } from "@/lib/json";
+import { ensureWorkspaceScope, AuthError } from "@/lib/workspace-guard";
 import type { BlockDocument } from "@/types/blocks";
 import Loading from "./loading";
 
@@ -43,22 +46,25 @@ export default async function ComposePage({
 
   const project = await prisma.project.findUnique({
     where: { id },
-    select: { id: true, name: true, content: true, status: true },
+    select: { id: true, name: true, content: true, status: true, workspaceId: true },
   });
 
   if (!project) {
     notFound();
   }
 
+  try {
+    await ensureWorkspaceScope(project.workspaceId as string);
+  } catch (err) {
+    if (err instanceof AuthError) redirect("/login");
+    notFound();
+  }
+
   let initialDoc = DEFAULT_DOC;
   if (project.content) {
-    try {
-      const parsed = JSON.parse(project.content);
-      if (parsed.format === "blocks") {
-        initialDoc = parsed as BlockDocument;
-      }
-    } catch {
-      // fall back to the default empty document
+    const parsed = parseJsonField<BlockDocument>(project.content);
+    if (parsed && parsed.format === "blocks") {
+      initialDoc = parsed;
     }
   }
 

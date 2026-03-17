@@ -1,6 +1,8 @@
 /** Sidebar + Header + Content 영역을 래핑하는 앱 공통 레이아웃 */
+import { redirect } from "next/navigation";
 import { AppSidebar } from "./app-sidebar";
 import { AppHeader } from "./app-header";
+import { AuthError } from "@/lib/workspace-guard";
 import { getHeaderSurfaceData } from "@/features/workspace-hub/home-feed";
 
 interface AppLayoutProps {
@@ -21,7 +23,13 @@ async function AppLayoutInner({
 }: AppLayoutProps & {
   headerDataPromise: ReturnType<typeof getHeaderSurfaceData>;
 }) {
-  const headerData = await headerDataPromise;
+  let headerData;
+  try {
+    headerData = await headerDataPromise;
+  } catch (err) {
+    if (err instanceof AuthError) redirect("/login");
+    throw err;
+  }
 
   return (
     <div className="takdi-shell flex min-h-screen text-[var(--takdi-text)]">

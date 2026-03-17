@@ -1,5 +1,6 @@
 /** Server-side helpers for resolving sections, artifacts, and representative media for a project. */
 import { prisma } from "@/lib/prisma";
+import { parseJsonField } from "@/lib/json";
 import type {
   ExportArtifactType,
   GenerationResultSection,
@@ -39,13 +40,9 @@ export async function resolveProjectSections(
       continue;
     }
 
-    try {
-      const parsed = JSON.parse(job.output) as { sections?: GenerationResultSection[] };
-      if (Array.isArray(parsed.sections)) {
-        return { sections: parsed.sections, source: "generation-job" };
-      }
-    } catch {
-      // continue
+    const parsed = parseJsonField<{ sections?: GenerationResultSection[] }>(job.output);
+    if (parsed && Array.isArray(parsed.sections)) {
+      return { sections: parsed.sections, source: "generation-job" };
     }
   }
 

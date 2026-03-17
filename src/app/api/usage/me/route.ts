@@ -4,7 +4,7 @@ import { jsonOk, jsonError } from "@/lib/api-response";
 
 export async function GET() {
   try {
-    const workspaceId = getWorkspaceId();
+    const workspaceId = await getWorkspaceId();
 
     const [totalEvents, generationCount, exportCount, costResult] = await Promise.all([
       prisma.usageLedger.count({ where: { workspaceId } }),

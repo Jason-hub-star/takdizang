@@ -1,15 +1,45 @@
 /** Minimal sidebar navigation for home, projects, and settings routes. */
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { FolderOpen, Home, Settings, User } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { FolderOpen, Home, LogOut, Settings, User } from "lucide-react";
 import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
+import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
+
+interface UserProfile {
+  email: string;
+  displayName: string | null;
+  avatarUrl: string | null;
+}
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { messages } = useT();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    const supabase = createBrowserSupabaseClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        setProfile({
+          email: user.email ?? "",
+          displayName: user.user_metadata?.name ?? null,
+          avatarUrl: user.user_metadata?.avatar_url ?? null,
+        });
+      }
+    });
+  }, []);
+
+  const handleLogout = useCallback(async () => {
+    const supabase = createBrowserSupabaseClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }, [router]);
   const navItems = [
     { href: "/", icon: Home, label: messages.common.actions.home },
     { href: "/projects", icon: FolderOpen, label: messages.common.actions.projects },
@@ -82,26 +112,44 @@ export function AppSidebar() {
         </div>
 
         <div className="space-y-3">
-          <div className="hidden rounded-[1.5rem] border border-[rgb(214_199_184_/_0.78)] bg-[rgb(255_252_247_/_0.58)] px-4 py-4 lg:block">
-            <p className="takdi-kicker">Mac Mini + NAS</p>
-            <p className="mt-2 text-sm leading-6 text-[var(--takdi-text-muted)]">
-              사내 렌더링과 에셋 보관 흐름을 한 화면에서 묶어 관리합니다.
-            </p>
-          </div>
-
           <Link
             href="/workspace"
             className="takdi-panel-strong flex items-center justify-center gap-3 rounded-[1.35rem] px-3 py-3 text-[var(--takdi-text-muted)] transition-colors hover:text-[var(--takdi-text)] lg:justify-start lg:px-4"
             title="워크스페이스 허브"
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[rgb(214_199_184_/_0.65)] bg-[rgb(255_255_255_/_0.84)]">
-              <User className="h-4 w-4" />
-            </span>
-            <span className="hidden lg:block">
-              <span className="block text-sm font-semibold text-[var(--takdi-text)]">워크스페이스</span>
-              <span className="block text-xs text-[var(--takdi-text-subtle)]">운영 허브 열기</span>
+            {profile?.avatarUrl ? (
+              <img
+                src={profile.avatarUrl}
+                alt=""
+                className="h-10 w-10 shrink-0 rounded-full border border-[rgb(214_199_184_/_0.65)] object-cover"
+              />
+            ) : (
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[rgb(214_199_184_/_0.65)] bg-[rgb(255_255_255_/_0.84)]">
+                <User className="h-4 w-4" />
+              </span>
+            )}
+            <span className="hidden min-w-0 lg:block">
+              <span className="block truncate text-sm font-semibold text-[var(--takdi-text)]">
+                {profile?.displayName ?? "워크스페이스"}
+              </span>
+              <span className="block truncate text-xs text-[var(--takdi-text-subtle)]">
+                {profile?.email ?? "운영 허브 열기"}
+              </span>
             </span>
           </Link>
+
+          {profile && (
+            <button
+              onClick={handleLogout}
+              className="flex w-full items-center justify-center gap-3 rounded-[1.35rem] px-3 py-2.5 text-[var(--takdi-text-muted)] transition-colors hover:bg-[rgb(248_231_226_/_0.6)] hover:text-red-600 lg:justify-start lg:px-4"
+              title="로그아웃"
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center">
+                <LogOut className="h-4 w-4" />
+              </span>
+              <span className="hidden text-xs font-medium lg:block">로그아웃</span>
+            </button>
+          )}
         </div>
       </div>
     </aside>

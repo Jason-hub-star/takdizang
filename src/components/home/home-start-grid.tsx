@@ -13,7 +13,7 @@ export function HomeStartGrid() {
 
   return (
     <>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-8">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {START_MODE_DEFINITIONS.map((mode) => (
           <ModeCard
             key={mode.mode}
@@ -27,7 +27,7 @@ export function HomeStartGrid() {
         <button
           type="button"
           onClick={() => setUploadOpen(true)}
-          className="group flex min-h-[154px] min-w-40 flex-col rounded-[1.8rem] border border-dashed border-[rgb(213_196_180_/_0.92)] bg-[linear-gradient(135deg,rgba(248,243,237,0.92),rgba(255,255,255,0.65))] p-5 text-left shadow-[0_18px_36px_rgba(80,54,34,0.05)] transition duration-200 hover:-translate-y-1 hover:border-[rgb(217_124_103_/_0.75)] hover:bg-white"
+          className="group flex min-h-[168px] min-w-40 flex-col rounded-[1.8rem] border border-dashed border-[rgb(213_196_180_/_0.92)] bg-[linear-gradient(135deg,rgba(248,243,237,0.92),rgba(255,255,255,0.65))] p-6 text-left shadow-[0_18px_36px_rgba(80,54,34,0.05)] transition duration-200 hover:-translate-y-1 hover:border-[rgb(217_124_103_/_0.75)] hover:bg-white"
         >
           <div className="flex items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.15rem] border border-[rgb(230_216_203_/_0.92)] bg-white text-[var(--takdi-text-muted)] transition group-hover:border-[rgb(241_197_186_/_0.95)] group-hover:bg-[rgb(249_231_226_/_0.95)] group-hover:text-[var(--takdi-accent-strong)]">

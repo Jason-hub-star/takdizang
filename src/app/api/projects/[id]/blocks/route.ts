@@ -32,7 +32,7 @@ export async function GET(
     if (!project) return jsonNotFound("Project");
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
@@ -42,7 +42,7 @@ export async function GET(
     }
 
     try {
-      const parsed = JSON.parse(project.content);
+      const parsed = typeof project.content === "string" ? JSON.parse(project.content) : project.content;
       if (parsed.format === "blocks") {
         return jsonOk(parsed as BlockDocument);
       }
@@ -82,14 +82,14 @@ export async function PUT(
     if (!project) return jsonNotFound("Project");
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
 
     await prisma.project.update({
       where: { id },
-      data: { content: JSON.stringify(body) },
+      data: { content: body },
     });
 
     return jsonOk({ ok: true });

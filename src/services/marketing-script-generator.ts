@@ -1,6 +1,7 @@
 /** Gemini-backed marketing script generation for shortform preview artifacts. */
 import { GoogleGenAI } from "@google/genai";
 import type { MarketingScript } from "@/types";
+import { isMockMode } from "./providers/registry";
 
 const MODEL = "gemini-2.5-flash";
 
@@ -28,6 +29,10 @@ export interface GenerateMarketingScriptOptions {
 export async function generateMarketingScriptWithGemini(
   options: GenerateMarketingScriptOptions,
 ): Promise<MarketingScript> {
+  if (isMockMode()) {
+    return generateMockMarketingScript(options);
+  }
+
   const apiKey = options.apiKey ?? process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY not configured");
@@ -97,4 +102,22 @@ function buildMarketingScriptPrompt(options: GenerateMarketingScriptOptions) {
     "영상 섹션 요약:",
     slideSummary || "(섹션 없음)",
   ].join("\n");
+}
+
+function generateMockMarketingScript(
+  options: GenerateMarketingScriptOptions,
+): MarketingScript {
+  const name = options.projectName || "테스트 상품";
+  return {
+    hook: `${name}, 지금 확인하세요!`,
+    body: `${name}의 특별한 매력을 소개합니다. 고품질 소재와 세련된 디자인으로 완성된 이 제품은 일상을 더욱 풍요롭게 만들어 줍니다. 지금 바로 만나보세요.`,
+    hashtags: [
+      `#${name.replace(/\s/g, "")}`,
+      "#추천템",
+      "#인기상품",
+      "#쇼핑",
+      "#신상",
+      "#MOCK테스트",
+    ],
+  };
 }

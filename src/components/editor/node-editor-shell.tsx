@@ -340,8 +340,8 @@ export function NodeEditorShell({
                 const project = (result as Record<string, unknown>).project as { content?: string } | undefined;
                 if (project?.content) {
                   try {
-                    const parsed = JSON.parse(project.content) as { sections?: ShortformProjectState["sections"] };
-                    const sections = Array.isArray(parsed.sections) ? parsed.sections : [];
+                    const parsed = (typeof project.content === "string" ? JSON.parse(project.content) : project.content) as { sections?: ShortformProjectState["sections"] };
+                    const sections = Array.isArray(parsed?.sections) ? parsed.sections : [];
                     if (sections.length > 0) {
                       setShortformState((current) => upsertShortformSections(current, sections));
                     }
@@ -421,7 +421,7 @@ export function NodeEditorShell({
                     let templateKey: "9:16" | "1:1" | "16:9" | null = null;
                     if (artifact.metadata) {
                       try {
-                        const parsed = JSON.parse(artifact.metadata) as { templateKey?: string };
+                        const parsed = (typeof artifact.metadata === "string" ? JSON.parse(artifact.metadata) : artifact.metadata) as { templateKey?: string };
                         if (parsed.templateKey === "9:16" || parsed.templateKey === "1:1" || parsed.templateKey === "16:9") {
                           templateKey = parsed.templateKey;
                         }

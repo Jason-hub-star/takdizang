@@ -34,7 +34,15 @@ const TABLES: Record<ModelName, string> = {
   composeTemplate: "compose_templates",
 };
 
-const UPDATED_AT_MODELS = new Set<ModelName>(["workspace", "project", "composeTemplate"]);
+const UPDATED_AT_MODELS = new Set<ModelName>([
+  "workspace",
+  "project",
+  "composeTemplate",
+  "asset",
+  "generationJob",
+  "exportArtifact",
+  "usageLedger",
+]);
 const workspaceSeedCache = new Set<string>();
 
 function createDeferred<T>(executor: () => Promise<T>): Promise<T> {

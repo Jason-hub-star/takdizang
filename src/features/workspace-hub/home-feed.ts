@@ -53,21 +53,21 @@ const EVENT_LABELS: Record<string, string> = {
   export_complete: "내보내기 완료",
 };
 
-function parseProjectId(detail: string | null) {
+function parseProjectId(detail: string | object | null) {
   if (!detail) {
     return null;
   }
 
   try {
-    const parsed = JSON.parse(detail) as { projectId?: string };
-    return parsed.projectId ?? null;
+    const parsed = typeof detail === "string" ? JSON.parse(detail) : detail;
+    return (parsed as { projectId?: string }).projectId ?? null;
   } catch {
     return null;
   }
 }
 
 export async function getHomeFeed(limit = 24): Promise<HomeFeedData> {
-  const workspaceId = getWorkspaceId();
+  const workspaceId = await getWorkspaceId();
 
   const [projects, templates] = await Promise.all([
     prisma.project.findMany({
@@ -102,7 +102,7 @@ export async function getHomeFeed(limit = 24): Promise<HomeFeedData> {
 }
 
 export async function getProjectsPageData(): Promise<HomeFeedData> {
-  const workspaceId = getWorkspaceId();
+  const workspaceId = await getWorkspaceId();
 
   const [projects, templates] = await Promise.all([
     prisma.project.findMany({
@@ -135,7 +135,7 @@ export async function getProjectsPageData(): Promise<HomeFeedData> {
 }
 
 export async function getHeaderSurfaceData(): Promise<HeaderSurfaceData> {
-  const workspaceId = getWorkspaceId();
+  const workspaceId = await getWorkspaceId();
 
   const [workspace, projects, templates, usageEvents] = await Promise.all([
     prisma.workspace.findUnique({
@@ -228,7 +228,7 @@ export async function getHeaderSurfaceData(): Promise<HeaderSurfaceData> {
 }
 
 export async function getSettingsSummary(): Promise<SettingsSummaryData> {
-  const workspaceId = getWorkspaceId();
+  const workspaceId = await getWorkspaceId();
   const workspace = await prisma.workspace.findUnique({
     where: { id: workspaceId },
     select: { id: true, name: true },

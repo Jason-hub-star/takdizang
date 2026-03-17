@@ -1,7 +1,8 @@
-/** 업로드 파일 정적 서빙 route handler */
+/** 업로드 파일 정적 서빙 route handler — 인증 필수 */
 import { extname } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { downloadPublicPath } from "@/lib/supabase/storage";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const MIME_MAP: Record<string, string> = {
   ".jpg": "image/jpeg",
@@ -21,6 +22,13 @@ export async function GET(
   { params }: { params: Promise<{ path: string[] }> },
 ) {
   const { path: segments } = await params;
+
+  // Auth check — only authenticated users can access uploads
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   // Path traversal 방어
   if (segments.some((s) => s === ".." || s.includes("\0"))) {

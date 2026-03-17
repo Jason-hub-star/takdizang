@@ -30,12 +30,12 @@ export async function GET(
     }
 
     try {
-      ensureWorkspaceScope(template.workspaceId);
+      await ensureWorkspaceScope(template.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
 
-    const snapshot = JSON.parse(template.snapshot) as BlockDocument;
+    const snapshot = (typeof template.snapshot === "string" ? JSON.parse(template.snapshot) : template.snapshot) as BlockDocument;
 
     if (snapshot.format !== "blocks") {
       return jsonError("Stored template snapshot is invalid", 500);
@@ -76,7 +76,7 @@ export async function DELETE(
     }
 
     try {
-      ensureWorkspaceScope(template.workspaceId);
+      await ensureWorkspaceScope(template.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { ensureWorkspaceScope, AuthError } from "@/lib/workspace-guard";
 import { getShortformStateFromContent, parseEditorGraph } from "@/lib/shortform-state";
 import Loading from "./loading";
 
@@ -36,10 +37,17 @@ export default async function EditorPage({
 
   const project = await prisma.project.findUnique({
     where: { id },
-    select: { id: true, name: true, mode: true, briefText: true, content: true },
+    select: { id: true, name: true, mode: true, briefText: true, content: true, workspaceId: true },
   });
 
   if (!project) {
+    notFound();
+  }
+
+  try {
+    await ensureWorkspaceScope(project.workspaceId as string);
+  } catch (err) {
+    if (err instanceof AuthError) redirect("/login");
     notFound();
   }
 

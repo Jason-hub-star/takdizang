@@ -6,7 +6,7 @@ import type { BlockDocument } from "@/types/blocks";
 
 export async function GET() {
   try {
-    const workspaceId = getWorkspaceId();
+    const workspaceId = await getWorkspaceId();
 
     const templates = await prisma.composeTemplate.findMany({
       where: { workspaceId },
@@ -31,7 +31,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const workspaceId = getWorkspaceId();
+    const workspaceId = await getWorkspaceId();
     const body = await request.json().catch(() => ({}));
 
     const name = typeof body.name === "string" ? body.name.trim() : "";
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       data: {
         workspaceId,
         name,
-        snapshot: JSON.stringify(normalizedSnapshot),
+        snapshot: normalizedSnapshot,
         previewTitle: createTemplatePreviewTitle(normalizedSnapshot),
         blockCount: normalizedSnapshot.blocks.length,
         sourceProjectId,

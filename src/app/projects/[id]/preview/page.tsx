@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { ensureWorkspaceScope, AuthError } from "@/lib/workspace-guard";
 import { PreviewShell } from "@/components/preview/preview-shell";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -53,10 +54,17 @@ export default async function PreviewPage({
 
   const project = await prisma.project.findUnique({
     where: { id },
-    select: { id: true, name: true, content: true, status: true, mode: true, briefText: true },
+    select: { id: true, name: true, content: true, status: true, mode: true, briefText: true, workspaceId: true },
   });
 
   if (!project) {
+    notFound();
+  }
+
+  try {
+    await ensureWorkspaceScope(project.workspaceId as string);
+  } catch (err) {
+    if (err instanceof AuthError) redirect("/login");
     notFound();
   }
 

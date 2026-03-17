@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { AppLayout } from "@/components/layout/app-layout";
+import { AuthError } from "@/lib/workspace-guard";
 import { getSettingsSummary } from "@/features/workspace-hub/home-feed";
 
 export const dynamic = "force-dynamic";
@@ -53,7 +55,13 @@ function formatDateTime(date: string | Date) {
 }
 
 export default async function WorkspacePage() {
-  const summary = await getSettingsSummary();
+  let summary;
+  try {
+    summary = await getSettingsSummary();
+  } catch (err) {
+    if (err instanceof AuthError) redirect("/login");
+    throw err;
+  }
 
   return (
     <AppLayout>

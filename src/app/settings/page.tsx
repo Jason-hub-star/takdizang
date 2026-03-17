@@ -1,6 +1,8 @@
 /** Read-only workspace operations summary for the current local setup. */
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { AppLayout } from "@/components/layout/app-layout";
+import { AuthError } from "@/lib/workspace-guard";
 import { getSettingsSummary } from "@/features/workspace-hub/home-feed";
 import { formatCurrentScope } from "@/i18n/format";
 import { getMessages } from "@/i18n/get-messages";
@@ -22,7 +24,7 @@ function SummaryCard({
   description: string;
 }) {
   return (
-    <div className="takdi-panel-strong rounded-[1.8rem] p-6">
+    <div className="takdi-panel-strong min-h-[140px] rounded-[1.8rem] p-6">
       <p className="takdi-stat-label">{title}</p>
       <p className="takdi-stat-value mt-3">{value}</p>
       <p className="mt-3 text-sm leading-6 text-[var(--takdi-text-muted)]">{description}</p>
@@ -40,7 +42,13 @@ function formatDateTime(date: string | Date) {
 }
 
 export default async function SettingsPage() {
-  const summary = await getSettingsSummary();
+  let summary;
+  try {
+    summary = await getSettingsSummary();
+  } catch (err) {
+    if (err instanceof AuthError) redirect("/login");
+    throw err;
+  }
   const messages = getMessages();
 
   return (

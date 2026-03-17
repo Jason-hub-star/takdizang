@@ -5,7 +5,7 @@ import { ensureWorkspaceScope, getWorkspaceId } from "@/lib/workspace-guard";
 import type { BlockDocument } from "@/types/blocks";
 
 export async function instantiateTemplateProject(templateId: string, customName?: string) {
-  const workspaceId = getWorkspaceId();
+  const workspaceId = await getWorkspaceId();
   const template = await prisma.composeTemplate.findUnique({
     where: { id: templateId },
     select: {
@@ -20,9 +20,9 @@ export async function instantiateTemplateProject(templateId: string, customName?
     return null;
   }
 
-  ensureWorkspaceScope(template.workspaceId);
+  await ensureWorkspaceScope(template.workspaceId);
 
-  const parsedSnapshot = JSON.parse(template.snapshot) as BlockDocument;
+  const parsedSnapshot = (typeof template.snapshot === "string" ? JSON.parse(template.snapshot) : template.snapshot) as BlockDocument;
   const snapshot = createTemplateSnapshot(parsedSnapshot);
   const projectName = customName?.trim() || `${template.name} 상세페이지`;
 
@@ -32,7 +32,7 @@ export async function instantiateTemplateProject(templateId: string, customName?
       name: projectName,
       mode: "compose",
       editorMode: "compose",
-      content: JSON.stringify(snapshot),
+      content: snapshot,
     },
     select: {
       id: true,

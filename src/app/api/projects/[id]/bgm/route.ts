@@ -16,7 +16,7 @@ export async function POST(
     if (!project) return jsonNotFound("Project");
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }

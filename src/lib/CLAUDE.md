@@ -11,9 +11,13 @@ Shared utilities and runtime helpers.
 - `save-artifact-file.ts`: text artifact persistence
 - `runtime-paths.ts`: deployment-aware uploads and runtime path helpers
 - `prisma.ts`: Supabase-backed Prisma compatibility adapter
-- `supabase/admin.ts`: server-side Supabase client factory
+- `supabase/admin.ts`: server-side Supabase admin client (service_role key, bypasses RLS)
+- `supabase/server.ts`: server-side Supabase client with cookie auth (API routes, SSR)
+- `supabase/browser.ts`: browser-side Supabase client for CSR components
 - `supabase/storage.ts`: `/uploads` public path to Supabase Storage bridge
-- `workspace-guard.ts`: workspace scope enforcement
+- `workspace-guard.ts`: auth-based workspace scope enforcement (async getAuthContext/getWorkspaceId/ensureWorkspaceScope)
+- `json.ts`: safe JSON field parser for TEXT↔JSONB compatibility
+- `usage-guard.ts`: workspace usage limit enforcement (free-tier limits)
 
 ## Convention
 - Keep business logic in `services/` when it talks to providers.

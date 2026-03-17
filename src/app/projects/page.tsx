@@ -1,6 +1,8 @@
 /** Full workspace explorer for projects and saved compose templates. */
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { AppLayout } from "@/components/layout/app-layout";
+import { AuthError } from "@/lib/workspace-guard";
 import { RecentProjects } from "@/components/home/recent-projects";
 import { SavedTemplates } from "@/components/home/saved-templates";
 import { getProjectsPageData } from "@/features/workspace-hub/home-feed";
@@ -14,7 +16,14 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
-  const { projects, templates } = await getProjectsPageData();
+  let data;
+  try {
+    data = await getProjectsPageData();
+  } catch (err) {
+    if (err instanceof AuthError) redirect("/login");
+    throw err;
+  }
+  const { projects, templates } = data;
   const messages = getMessages();
 
   return (

@@ -6,7 +6,7 @@ import { isProjectMode } from "@/lib/project-contract";
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
-    const workspaceId = getWorkspaceId();
+    const workspaceId = await getWorkspaceId();
 
     const name = body.name || `Project-${Date.now()}`;
     if (body.mode !== undefined && !isProjectMode(body.mode)) {

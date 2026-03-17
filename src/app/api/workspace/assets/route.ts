@@ -6,7 +6,7 @@ import { findPreviewPath, readImageSize } from "@/lib/asset-images";
 
 export async function GET() {
   try {
-    const workspaceId = getWorkspaceId();
+    const workspaceId = await getWorkspaceId();
 
     const projects = await prisma.project.findMany({
       where: { workspaceId },

@@ -1,5 +1,25 @@
 /** Placeholder route for a future dedicated marketing landing page. */
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Takdi Studio — AI 이커머스 콘텐츠 자동화",
+  description:
+    "상세페이지, 숏폼 영상, 모델컷, 누끼까지 — 이커머스에 필요한 콘텐츠를 AI와 함께 빠르게 만들어 보세요.",
+  openGraph: {
+    title: "Takdi Studio — AI 이커머스 콘텐츠 자동화",
+    description:
+      "상세페이지, 숏폼 영상, 모델컷, 누끼까지 — 이커머스에 필요한 콘텐츠를 AI와 함께 빠르게 만들어 보세요.",
+    type: "website",
+    locale: "ko_KR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Takdi Studio — AI 이커머스 콘텐츠 자동화",
+    description:
+      "상세페이지, 숏폼 영상, 모델컷, 누끼까지 — AI 기반 이커머스 콘텐츠 자동화 도구",
+  },
+};
 
 export default function LandingPage() {
   return (
@@ -8,11 +28,12 @@ export default function LandingPage() {
         <div className="space-y-3">
           <p className="takdi-kicker">Landing</p>
           <h1 className="text-[clamp(2rem,3vw,3.4rem)] font-semibold tracking-[-0.05em]">
-            랜딩페이지는 여기서 별도로 디자인하면 됩니다
+            AI 기반 이커머스 콘텐츠, 한 곳에서
           </h1>
           <p className="max-w-3xl text-sm leading-7 text-[var(--takdi-text-muted)]">
-            현재 `takdizang`의 메인 제품 영역은 `takdi` 본체 UI와 기능을 그대로 가져온 상태입니다.
-            이 경로는 이후 마케팅용 랜딩을 따로 제작할 때 쓰기 위한 분리된 진입점입니다.
+            상세페이지, 숏폼 영상, 모델컷, 누끼까지 — 이커머스에 필요한 콘텐츠를
+            AI와 함께 빠르게 만들어 보세요. Takdi Studio가 기획부터 내보내기까지
+            전 과정을 도와드립니다.
           </p>
         </div>
 
