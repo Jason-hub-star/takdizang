@@ -1,6 +1,6 @@
 # Claude Handoff
 
-Last Updated: 2026-03-16 (KST, 컴포즈 블록별 AI 생성 UX 리팩토링)
+Last Updated: 2026-03-17 (KST, Compose AI UX v4 + Vercel 배포 준비)
 Branch: `main`
 
 ## Current Snapshot
@@ -9,47 +9,107 @@ Branch: `main`
 - **Schema 정비 완료**: TEXT→JSONB 변환, CHECK 제약, 복합 인덱스, updated_at 전파
 - **사용량 제한 가드**: 무료 한도 초과 시 429 반환 인프라
 - 24+ API route의 workspace-guard 비동기 전환 완료
-- **컴포즈 블록별 AI 인라인 통합**: 16개 블록(divider/video 제외)에서 AI 문구 생성 가능, 원클릭 생성 UX
-- **AI 허브 탭 제거**: 프로젝트 레벨 AI 도구(영상/썸네일/스크립트)를 툴바 드롭다운 → 모달로 이전
+- **컴포즈 AI 통합**: BlockTextGenerator 제거 → 우측 패널 "AI 생성" 탭(AiGenerateTab)으로 단일화
+- **블록 사이 삽입 프리뷰**: ghost block이 insertAt 위치에 정확히 표시
+- **AI 도구 모달**: 영상 렌더링/썸네일/스크립트 → 툴바 드롭다운 → 모달
+- **Editor 노드 그래프**: React Flow 기반, 6개 모드, Simple/Expert 뷰
+- **Compose/Editor 독립 병렬 동작**: 같은 `project.content` 필드, mode로 포맷 분리
 
-## Recent Changes (2026-03-16, 블록별 AI 생성 UX 리팩토링)
+## Editor State
+- `src/components/editor/node-editor-shell.tsx` — React Flow 노드 그래프 에디터 코어
+- 6개 모드: shortform-video, model-shot, cutout, brand-image, freeform, gif-source
+- Simple 뷰: 가이드 4개 모드 (Step Editor 위저드, 3그룹 분류)
+- Expert 뷰: 자유 2개 모드 (freeform, gif-source)
+- 파이프라인: prompt → generate-images → bgm → cuts → render → export
+- 저장: `PATCH /api/projects/[id]/content` → EditorGraph (nodes/edges/shortform)
 
-### Phase 1: API 프롬프트 확장
-- `src/app/api/projects/[id]/generate-block-text/route.ts` — BLOCK_PROMPTS + RESPONSE_SCHEMAS에 10개 블록 타입 추가 (image-text, spec-table, cta, usage-steps, notice, price-promo, trust-badge, comparison, image-grid)
+## Recent Changes (2026-03-17, Compose AI UX v4)
 
-### Phase 2: 속성 패널 AI 통합
-- `src/components/compose/block-properties-panel.tsx` — 9개 블록에 BlockTextGenerator 추가 + image-grid/comparison에 ImageGenerateAction 추가
-- `src/components/compose/shared/image-generate-action.tsx` — `label` prop 추가
+### Phase 1: 블록 사이 삽입 프리뷰 위치 반영
+- `compose-shell.tsx` — `handlePreviewBlock`이 `insertIndex` 소비, `handleConfirmPlace`가 `splice(insertAt)` 사용
+- `block-canvas.tsx` — `GhostBlock` 컴포넌트 추출, `insertAt` 위치에 렌더링
 
-### Phase 3: AI 허브 탭 제거 + 툴바 이동
-- `src/components/compose/right-panel.tsx` — 탭 UI 제거, 속성 패널만 렌더링
-- `src/components/compose/compose-shell.tsx` — `activeRightTab` 제거, `aiToolType` 상태 추가
-- `src/components/compose/compose-toolbar.tsx` — "AI 도구" 드롭다운 추가 (영상/썸네일/스크립트)
-- `src/components/compose/ai-tool-dialog.tsx` — 신규 모달 (3개 AI 도구)
-- `src/components/compose/ai-hub-panel.tsx` — 삭제 (기능 이전 완료)
+### Phase 2: AI 패널 우측 통합
+- `ai-generation-panel.tsx` — `AiGenerationPanel` → `AiGenerateTab`으로 리팩터 (슬라이드 → 탭 내 세로 레이아웃)
+- `right-panel.tsx` — 속성/AI생성 탭 기반 패널로 확장
+- `block-properties-panel.tsx` — 외부 래퍼 스타일을 right-panel로 이동
+- `compose-toolbar.tsx` — "AI 생성" 토글 버튼 제거
+- `compose-shell.tsx` — `aiPanelOpen` state 및 AiGenerationPanel 렌더 제거
 
-### UX 개선: 원클릭 생성
-- `src/components/compose/shared/block-text-generator.tsx` — 리팩토링: 1클릭 즉시 생성 → 미리보기 → 적용 (2클릭), 톤/프롬프트 설정은 "설정 열기"로 접근
+### Phase 3: BlockTextGenerator 제거
+- `block-properties-panel.tsx` — 14곳의 BlockTextGenerator JSX 제거 (-326줄)
+- `shared/block-text-generator.tsx` — 파일 삭제 (-219줄)
+- AI 문구 생성은 우측 패널 "AI 생성" 탭으로 통일 (드래그드롭 방식)
+
+## Vercel 배포 환경변수
+
+### 필수 (Required)
+| 변수 | 용도 | 예시 |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase 프로젝트 URL | `https://xxx.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key (브라우저/미들웨어) | `eyJ...` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role (서버 전용, RLS 우회) | `eyJ...` |
+| `NEXT_PUBLIC_APP_URL` | 프로덕션 URL (콜백/API 내부 호출) | `https://takdizang.vercel.app` |
+
+### AI 프로바이더 (프로덕션용)
+| 변수 | 용도 | 비고 |
+|---|---|---|
+| `GEMINI_API_KEY` | Gemini 텍스트/스크립트 생성 | 없으면 mock 폴백 |
+| `KIE_API_KEY` | Kie.ai 이미지 생성/모델컷/누끼/썸네일 | 없으면 mock 폴백 |
+
+### 선택 (Optional)
+| 변수 | 기본값 | 용도 |
+|---|---|---|
+| `USE_MOCK` | `undefined` | `"true"` 시 모든 외부 API 우회 |
+| `NEXT_PUBLIC_SITE_URL` | `https://takdi.studio` | sitemap 생성용 |
+| `IMAGE_PROVIDER` | `kie` | 이미지 프로바이더 오버라이드 |
+| `DEFAULT_WORKSPACE_NAME` | `Takdi Studio` | 기본 워크스페이스 이름 |
+
+> **주의**: `USE_MOCK=true`를 설정하면 AI 기능은 placeholder로 동작. 프로덕션에서는 반드시 제거하고 실제 API 키 사용.
+
+## Supabase 추가 설정
+
+### 1. Migration 적용 (필수)
+5개 마이그레이션 파일이 로컬에만 존재 → Supabase에 적용 필요:
+```
+supabase/migrations/20260315000000_takdi_core.sql        # 코어 테이블
+supabase/migrations/20260315232500_storage_buckets.sql    # 스토리지 버킷
+supabase/migrations/20260316100000_schema_cleanup.sql     # JSONB 변환 + CHECK 제약
+supabase/migrations/20260316100100_auth_schema.sql        # profiles + workspace_members
+supabase/migrations/20260316100200_rls_policies.sql       # RLS 정책
+```
+방법: `npx supabase link --project-ref <ref>` → `npx supabase db push`
+또는 Supabase Dashboard SQL Editor에서 순서대로 실행.
+
+### 2. Auth Provider 설정 (필수)
+Supabase Dashboard → Authentication → Providers:
+- **Email**: 활성화 (기본)
+- **Google OAuth**: Client ID + Secret 설정 필요
+  - Google Cloud Console → OAuth 2.0 → Redirect URI: `https://<supabase-ref>.supabase.co/auth/v1/callback`
+
+### 3. Storage Bucket 확인
+migration에서 자동 생성되지만 확인 필요:
+- `project-assets` (public)
+- `artifacts` (public)
+- `thumbnails` (public)
+
+### 4. Seed 데이터 (선택)
+`supabase/seed.sql` — 개발용 샘플 데이터. 프로덕션에서는 불필요.
 
 ## Important Open Issues
-- **Supabase CLI 링크 미완료**: `npx supabase link` 시 Forbidden → DB password 재설정 필요
-- **Migration 미적용**: 3개 신규 migration 파일이 로컬에만 존재 (schema_cleanup, auth_schema, rls_policies)
-- `GEMINI_API_KEY` 주석 처리 상태 → 블록 텍스트 생성 실제 호출 불가
-- `KIE_API_KEY` 크레딧 부족 → 이미지 생성/모델컷/썸네일 실제 호출 불가
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` 환경 변수 필요 (기존 publishable key와 동일)
+- **Migration 미적용**: 5개 migration 파일이 로컬에만 존재
+- `GEMINI_API_KEY` 비활성 → 블록 텍스트 생성 mock 폴백
+- `KIE_API_KEY` 크레딧 부족 → 이미지 생성 mock 폴백
 
 ## Recommended Next Steps
-1. **Supabase Dashboard에서 DB password 재설정** → `npx supabase link` → `npx supabase db push`
-2. 또는 Supabase MCP `execute_sql`로 3개 migration 직접 실행
-3. Supabase Dashboard → Auth → Providers에서 Google OAuth 설정
-4. `NEXT_PUBLIC_SUPABASE_ANON_KEY` 환경 변수 확인
-5. `GEMINI_API_KEY` 활성화 후 16개 블록 AI 문구 생성 E2E 확인
-6. Phase 3 (Stripe 결제) 구현
-7. Phase 6 (CI/CD) `.github/workflows/ci.yml` 추가
+1. Supabase Dashboard에서 migration 적용 (5개 파일 순서대로)
+2. Supabase Auth → Google OAuth 설정
+3. Vercel 프로젝트 생성 → 환경변수 설정 → 배포
+4. `GEMINI_API_KEY`, `KIE_API_KEY` 활성화
+5. 프로덕션 E2E 검증
 
 ## Validation Commands
 - `npm run typecheck` — 0 errors 확인
 - `npm run build` — 빌드 성공 확인
 - `npm test`
 - `npx playwright test`
-- Migration 적용 후: seed 재삽입 → CHECK 제약 통과 확인
