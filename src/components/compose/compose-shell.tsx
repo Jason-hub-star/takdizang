@@ -1,7 +1,7 @@
 /** Compose editor shell with DnD, autosave, templates, and guarded navigation. */
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -38,6 +38,10 @@ import { SaveTemplateDialog } from "./save-template-dialog";
 import { validateBlocks, autoFixAllBlocks } from "@/lib/design-guardrails";
 import { BLOCK_TEMPLATES } from "./block-palette";
 import { AiToolDialog } from "./ai-tool-dialog";
+import { QuickActions, buildQuickActions } from "./quick-actions";
+import { DraftGeneratorDialog } from "./draft-generator-dialog";
+import { BlockContextMenu, type ContextMenuPosition } from "./block-context-menu";
+import { generateBlockText } from "@/lib/api-client";
 import { WORKSPACE_SURFACE, WORKSPACE_TEXT } from "@/lib/workspace-surface";
 
 const UNDO_COALESCE_MS = 400;
@@ -75,6 +79,9 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
   const [mobilePreview, setMobilePreview] = useState(false);
   const [draggingLabel, setDraggingLabel] = useState<string | null>(null);
   const [aiToolType, setAiToolType] = useState<"video" | "thumbnail" | "script" | null>(null);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [bulkGenerateOpen, setBulkGenerateOpen] = useState(false);
+  const [contextMenu, setContextMenu] = useState<ContextMenuPosition | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const sensors = useSensors(
@@ -338,6 +345,136 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
     router.push("/");
   }, [persistDoc, router]);
 
+  const handleContextMenu = useCallback((e: React.MouseEvent, blockId: string, blockType: string) => {
+    setContextMenu({ x: e.clientX, y: e.clientY, blockId, blockType });
+    setSelectedBlockId(blockId);
+  }, []);
+
+  const handleDuplicateBlock = useCallback((blockId: string) => {
+    const block = blocksRef.current.find((b) => b.id === blockId);
+    if (!block) return;
+    pushUndo(blocksRef.current);
+    const clone = { ...JSON.parse(JSON.stringify(block)), id: `blk-${Date.now()}-dup` };
+    const idx = blocksRef.current.findIndex((b) => b.id === blockId);
+    setBlocks((prev) => {
+      const next = [...prev];
+      next.splice(idx + 1, 0, clone);
+      return next;
+    });
+    setSelectedBlockId(clone.id);
+  }, [pushUndo]);
+
+  const handleMoveBlock = useCallback((blockId: string, direction: "up" | "down") => {
+    const idx = blocksRef.current.findIndex((b) => b.id === blockId);
+    if (idx < 0) return;
+    const newIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (newIdx < 0 || newIdx >= blocksRef.current.length) return;
+    pushUndo(blocksRef.current);
+    setBlocks((prev) => {
+      const next = [...prev];
+      [next[idx], next[newIdx]] = [next[newIdx], next[idx]];
+      return next;
+    });
+  }, [pushUndo]);
+
+  const handleFillEmpty = useCallback(async () => {
+    const hasEmptyText = (block: Block): boolean => {
+      if ("headline" in block && !block.headline) return true;
+      if ("body" in block && !block.body) return true;
+      if ("text" in block && !block.text) return true;
+      return false;
+    };
+    const emptyBlocks = blocksRef.current.filter(hasEmptyText);
+    if (emptyBlocks.length === 0) {
+      toast.info("빈 칸이 없습니다");
+      return;
+    }
+    const confirmed = window.confirm(`${emptyBlocks.length}개 블록을 채웁니다 (약 ${emptyBlocks.length * 3} 크레딧)`);
+    if (!confirmed) return;
+    pushUndo(blocksRef.current);
+    for (const block of emptyBlocks) {
+      try {
+        const { result } = await generateBlockText(projectId, { blockType: block.type });
+        setBlocks((prev) =>
+          prev.map((b) => (b.id === block.id ? { ...b, ...result } as Block : b)),
+        );
+      } catch (err) {
+        toast.error(`블록 생성 실패: ${err instanceof Error ? err.message : "알 수 없는 오류"}`);
+        break;
+      }
+    }
+    toast.success(`${emptyBlocks.length}개 블록의 빈 칸을 채웠습니다`);
+  }, [projectId, pushUndo]);
+
+  const handleAddVariation = useCallback(async (blockId: string) => {
+    const block = blocksRef.current.find((b) => b.id === blockId);
+    if (!block) return;
+    try {
+      const { result } = await generateBlockText(projectId, {
+        blockType: block.type,
+        context: JSON.stringify(block),
+        userPrompt: "같은 구조, 다른 내용으로 변형해주세요",
+      });
+      pushUndo(blocksRef.current);
+      const clone: Block = { ...JSON.parse(JSON.stringify(block)), id: `blk-${Date.now()}-var`, ...result } as Block;
+      const idx = blocksRef.current.findIndex((b) => b.id === blockId);
+      setBlocks((prev) => {
+        const next = [...prev];
+        next.splice(idx + 1, 0, clone);
+        return next;
+      });
+      setSelectedBlockId(clone.id);
+      toast.success("변형 블록을 추가했습니다");
+    } catch (err) {
+      toast.error(`변형 생성 실패: ${err instanceof Error ? err.message : "알 수 없는 오류"}`);
+    }
+  }, [projectId, pushUndo]);
+
+  const handleBulkDraftComplete = useCallback((doc: import("@/types/blocks").BlockDocument) => {
+    resetHistory(doc.blocks);
+    setBlocks(doc.blocks);
+    if (doc.platform?.name) setPlatform(doc.platform.name);
+    if (doc.theme) setTheme(doc.theme);
+    setSelectedBlockId(null);
+    setInsertIndex(null);
+  }, [resetHistory]);
+
+  const quickActions = useMemo(
+    () =>
+      buildQuickActions({
+        onBulkDraft: () => setBulkGenerateOpen(true),
+        onBlockText: () => {
+          if (selectedBlockId) {
+            // Trigger AI text generate via existing right panel flow
+            const block = blocksRef.current.find((b) => b.id === selectedBlockId);
+            if (block) setSelectedBlockId(block.id); // ensure panel is open
+          }
+        },
+        onTextRewrite: () => {
+          if (selectedBlockId) setSelectedBlockId(selectedBlockId);
+        },
+        onFillEmpty: () => void handleFillEmpty(),
+        onAddVariation: () => {
+          if (selectedBlockId) void handleAddVariation(selectedBlockId);
+        },
+        onImageGen: () => {
+          // Open AI tool dialog or navigate to image block
+        },
+        onSceneCompose: () => {},
+        onModelCompose: () => {},
+        onRemoveBg: () => {},
+        onVideoRender: () => setAiToolType("video"),
+        onThumbnail: () => setAiToolType("thumbnail"),
+        onScript: () => setAiToolType("script"),
+        onSave: () => void handleSave(),
+        onPreview: () => void handlePreview(),
+        onExport: () => setExportOpen(true),
+        onDesignCheck: handleDesignCheck,
+        onTemplates: () => setBriefOpen(true),
+      }),
+    [selectedBlockId, handleFillEmpty, handleAddVariation, handleSave, handlePreview, handleDesignCheck],
+  );
+
   const handleDragStart = useCallback((event: DragStartEvent) => {
     const data = event.active.data.current;
     if (data?.type === "palette-item") {
@@ -463,7 +600,11 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
         return;
       }
 
-      if (event.ctrlKey && event.key === "s") {
+      if (event.ctrlKey && event.key === "k") {
+        event.preventDefault();
+        setCommandPaletteOpen((prev) => !prev);
+        return;
+      } else if (event.ctrlKey && event.key === "s") {
         event.preventDefault();
         void handleSave();
       } else if (event.ctrlKey && event.shiftKey && event.key === "Z") {
@@ -509,6 +650,7 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
             onPreview={handlePreview}
             onExport={handleExport}
             onSaveTemplate={handleOpenSaveTemplate}
+            onQuickActions={() => setCommandPaletteOpen(true)}
             onAiGenerate={() => setBriefOpen(true)}
             onDesignCheck={handleDesignCheck}
             onAutoFixAll={handleAutoFixAll}
@@ -541,6 +683,7 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
               onSelectBlock={setSelectedBlockId}
               onInsertBlock={handleInsertBlock}
               onUpdateBlock={handleUpdateBlock}
+              onContextMenu={handleContextMenu}
             />
 
             <RightPanel
@@ -593,6 +736,39 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
         onClose={() => setLeaveOpen(false)}
         onDiscard={handleDiscardAndLeave}
         onSaveAndLeave={() => void handleSaveAndLeave()}
+      />
+      <QuickActions
+        open={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+        actions={quickActions}
+        selectedBlockId={selectedBlockId}
+        selectedBlockType={selectedBlock?.type ?? null}
+        projectStatus={projectStatus}
+      />
+      <DraftGeneratorDialog
+        open={bulkGenerateOpen}
+        onClose={() => setBulkGenerateOpen(false)}
+        projectId={projectId}
+        onComplete={handleBulkDraftComplete}
+      />
+      <BlockContextMenu
+        position={contextMenu}
+        onClose={() => setContextMenu(null)}
+        onBlockText={(id) => setSelectedBlockId(id)}
+        onTextRewrite={(id) => setSelectedBlockId(id)}
+        onImageGen={(id) => setSelectedBlockId(id)}
+        onSceneCompose={(id) => setSelectedBlockId(id)}
+        onModelCompose={(id) => setSelectedBlockId(id)}
+        onRemoveBg={(id) => setSelectedBlockId(id)}
+        onAddVariation={(id) => void handleAddVariation(id)}
+        onDuplicate={handleDuplicateBlock}
+        onDelete={(id) => {
+          handleBlocksChange(blocks.filter((b) => b.id !== id));
+          setSelectedBlockId(null);
+        }}
+        onMoveUp={(id) => handleMoveBlock(id, "up")}
+        onMoveDown={(id) => handleMoveBlock(id, "down")}
+        onQuickActions={() => setCommandPaletteOpen(true)}
       />
     </ComposeProvider>
   );

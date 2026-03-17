@@ -29,6 +29,7 @@ interface BlockCanvasProps {
   onSelectBlock: (id: string | null) => void;
   onInsertBlock: (index: number) => void;
   onUpdateBlock: (id: string, patch: Partial<Block>) => void;
+  onContextMenu?: (e: React.MouseEvent, blockId: string, blockType: string) => void;
 }
 
 interface SortableBlockProps {
@@ -39,6 +40,7 @@ interface SortableBlockProps {
   onDeleteBlock: (id: string) => void;
   onUpdateBlock: (id: string, patch: Partial<Block>) => void;
   onAutoFixBlock: (blockId: string, violation: GuardrailViolation) => void;
+  onContextMenu?: (e: React.MouseEvent, blockId: string, blockType: string) => void;
 }
 
 const EMPTY_VIOLATIONS: GuardrailViolation[] = [];
@@ -51,6 +53,7 @@ function SortableBlock({
   onDeleteBlock,
   onUpdateBlock,
   onAutoFixBlock,
+  onContextMenu,
 }: SortableBlockProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: block.id,
@@ -93,7 +96,15 @@ function SortableBlock({
   );
 
   return (
-    <div ref={setNodeRef} style={style} className="group relative">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="group relative"
+      onContextMenu={(e) => {
+        e.preventDefault();
+        onContextMenu?.(e, block.id, block.type);
+      }}
+    >
       <div className="absolute -left-10 top-2 z-10 flex flex-col gap-1 opacity-0 transition-opacity group-hover:opacity-100">
         <button
           {...attributes}
@@ -150,7 +161,8 @@ const MemoSortableBlock = memo(SortableBlock, (prev, next) => {
     prev.onSelectBlock === next.onSelectBlock &&
     prev.onDeleteBlock === next.onDeleteBlock &&
     prev.onUpdateBlock === next.onUpdateBlock &&
-    prev.onAutoFixBlock === next.onAutoFixBlock
+    prev.onAutoFixBlock === next.onAutoFixBlock &&
+    prev.onContextMenu === next.onContextMenu
   );
 });
 
@@ -203,6 +215,7 @@ export const BlockCanvas = forwardRef<HTMLDivElement, BlockCanvasProps>(function
     onSelectBlock,
     onInsertBlock,
     onUpdateBlock,
+    onContextMenu,
   },
   ref,
 ) {
@@ -288,6 +301,7 @@ export const BlockCanvas = forwardRef<HTMLDivElement, BlockCanvasProps>(function
                   onDeleteBlock={handleDelete}
                   onUpdateBlock={onUpdateBlock}
                   onAutoFixBlock={handleAutoFix}
+                  onContextMenu={onContextMenu}
                 />
               )}
 

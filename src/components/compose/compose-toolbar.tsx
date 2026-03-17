@@ -14,6 +14,7 @@ import {
   Loader2,
   Monitor,
   Save,
+  Search,
   ShieldCheck,
   Smartphone,
   Sparkles,
@@ -38,6 +39,7 @@ interface ComposeToolbarProps {
   onExport: () => void;
   onSaveTemplate: () => void;
   onAiGenerate?: () => void;
+  onQuickActions?: () => void;
   onDesignCheck?: () => void;
   onAutoFixAll?: () => void;
   onAiVideoRender?: () => void;
@@ -65,6 +67,7 @@ export function ComposeToolbar({
   onExport,
   onSaveTemplate,
   onAiGenerate,
+  onQuickActions,
   onDesignCheck,
   onAutoFixAll,
   onAiVideoRender,
@@ -126,6 +129,18 @@ export function ComposeToolbar({
       </div>
 
       <div className="flex items-center gap-1">
+        {onQuickActions && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onQuickActions}
+            className={`flex items-center gap-1 rounded-2xl text-xs ${WORKSPACE_TEXT.accent} hover:text-[#CF705A]`}
+          >
+            <Search className="h-3.5 w-3.5" />
+            빠른 실행
+            <kbd className="ml-1 rounded border px-1 py-0.5 text-[9px] text-[var(--takdi-text-subtle)]">⌘K</kbd>
+          </Button>
+        )}
         {onAiGenerate && (
           <Button
             variant="ghost"
