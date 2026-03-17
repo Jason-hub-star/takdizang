@@ -591,6 +591,13 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       const element = event.target as HTMLElement;
+      // Ctrl+K는 어디서든 동작 (글로벌 단축키)
+      if (event.ctrlKey && event.key === "k") {
+        event.preventDefault();
+        setCommandPaletteOpen((prev) => !prev);
+        return;
+      }
+
       if (
         element.tagName === "INPUT" ||
         element.tagName === "TEXTAREA" ||
@@ -600,11 +607,7 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
         return;
       }
 
-      if (event.ctrlKey && event.key === "k") {
-        event.preventDefault();
-        setCommandPaletteOpen((prev) => !prev);
-        return;
-      } else if (event.ctrlKey && event.key === "s") {
+      if (event.ctrlKey && event.key === "s") {
         event.preventDefault();
         void handleSave();
       } else if (event.ctrlKey && event.shiftKey && event.key === "Z") {
