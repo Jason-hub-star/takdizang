@@ -11,7 +11,6 @@ import {
   ImagePlus,
   Pencil,
   RefreshCw,
-  Search,
   Trash2,
   UserRound,
   Wand2,
@@ -39,7 +38,6 @@ interface BlockContextMenuProps {
   onDelete: (blockId: string) => void;
   onMoveUp: (blockId: string) => void;
   onMoveDown: (blockId: string) => void;
-  onQuickActions: () => void;
 }
 
 const TEXT_BLOCK_TYPES = new Set([
@@ -109,7 +107,6 @@ export function BlockContextMenu({
   onDelete,
   onMoveUp,
   onMoveDown,
-  onQuickActions,
 }: BlockContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -239,14 +236,6 @@ export function BlockContextMenu({
         onClick={() => { onMoveDown(blockId); onClose(); }}
       />
 
-      <MenuDivider />
-
-      <MenuItem
-        icon={<Search className="h-3.5 w-3.5" />}
-        label="빠른 실행"
-        shortcut="Ctrl+K"
-        onClick={() => { onQuickActions(); onClose(); }}
-      />
     </div>
   );
 }

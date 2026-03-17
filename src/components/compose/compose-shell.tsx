@@ -1,7 +1,7 @@
 /** Compose editor shell with DnD, autosave, templates, and guarded navigation. */
 "use client";
 
-import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -38,7 +38,6 @@ import { SaveTemplateDialog } from "./save-template-dialog";
 import { validateBlocks, autoFixAllBlocks } from "@/lib/design-guardrails";
 import { BLOCK_TEMPLATES } from "./block-palette";
 import { AiToolDialog } from "./ai-tool-dialog";
-import { QuickActions, buildQuickActions } from "./quick-actions";
 import { DraftGeneratorDialog } from "./draft-generator-dialog";
 import { BlockContextMenu, type ContextMenuPosition } from "./block-context-menu";
 import { generateBlockText } from "@/lib/api-client";
@@ -79,7 +78,6 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
   const [mobilePreview, setMobilePreview] = useState(false);
   const [draggingLabel, setDraggingLabel] = useState<string | null>(null);
   const [aiToolType, setAiToolType] = useState<"video" | "thumbnail" | "script" | null>(null);
-  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [bulkGenerateOpen, setBulkGenerateOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<ContextMenuPosition | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -439,41 +437,6 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
     setInsertIndex(null);
   }, [resetHistory]);
 
-  const quickActions = useMemo(
-    () =>
-      buildQuickActions({
-        onBulkDraft: () => setBulkGenerateOpen(true),
-        onBlockText: () => {
-          if (selectedBlockId) {
-            // Trigger AI text generate via existing right panel flow
-            const block = blocksRef.current.find((b) => b.id === selectedBlockId);
-            if (block) setSelectedBlockId(block.id); // ensure panel is open
-          }
-        },
-        onTextRewrite: () => {
-          if (selectedBlockId) setSelectedBlockId(selectedBlockId);
-        },
-        onFillEmpty: () => void handleFillEmpty(),
-        onAddVariation: () => {
-          if (selectedBlockId) void handleAddVariation(selectedBlockId);
-        },
-        onImageGen: () => {
-          // Open AI tool dialog or navigate to image block
-        },
-        onSceneCompose: () => {},
-        onModelCompose: () => {},
-        onRemoveBg: () => {},
-        onVideoRender: () => setAiToolType("video"),
-        onThumbnail: () => setAiToolType("thumbnail"),
-        onScript: () => setAiToolType("script"),
-        onSave: () => void handleSave(),
-        onPreview: () => void handlePreview(),
-        onExport: () => setExportOpen(true),
-        onDesignCheck: handleDesignCheck,
-        onTemplates: () => setBriefOpen(true),
-      }),
-    [selectedBlockId, handleFillEmpty, handleAddVariation, handleSave, handlePreview, handleDesignCheck],
-  );
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     const data = event.active.data.current;
@@ -591,13 +554,6 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       const element = event.target as HTMLElement;
-      // Ctrl+K는 어디서든 동작 (글로벌 단축키)
-      if (event.ctrlKey && event.key === "k") {
-        event.preventDefault();
-        setCommandPaletteOpen((prev) => !prev);
-        return;
-      }
-
       if (
         element.tagName === "INPUT" ||
         element.tagName === "TEXTAREA" ||
@@ -653,7 +609,6 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
             onPreview={handlePreview}
             onExport={handleExport}
             onSaveTemplate={handleOpenSaveTemplate}
-            onQuickActions={() => setCommandPaletteOpen(true)}
             onAiGenerate={() => setBriefOpen(true)}
             onDesignCheck={handleDesignCheck}
             onAutoFixAll={handleAutoFixAll}
@@ -740,14 +695,6 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
         onDiscard={handleDiscardAndLeave}
         onSaveAndLeave={() => void handleSaveAndLeave()}
       />
-      <QuickActions
-        open={commandPaletteOpen}
-        onClose={() => setCommandPaletteOpen(false)}
-        actions={quickActions}
-        selectedBlockId={selectedBlockId}
-        selectedBlockType={selectedBlock?.type ?? null}
-        projectStatus={projectStatus}
-      />
       <DraftGeneratorDialog
         open={bulkGenerateOpen}
         onClose={() => setBulkGenerateOpen(false)}
@@ -771,7 +718,6 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
         }}
         onMoveUp={(id) => handleMoveBlock(id, "up")}
         onMoveDown={(id) => handleMoveBlock(id, "down")}
-        onQuickActions={() => setCommandPaletteOpen(true)}
       />
     </ComposeProvider>
   );
