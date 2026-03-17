@@ -38,6 +38,8 @@ interface ComposeToolbarProps {
   onExport: () => void;
   onSaveTemplate: () => void;
   onAiGenerate?: () => void;
+  onToggleAiPanel?: () => void;
+  aiPanelOpen?: boolean;
   onDesignCheck?: () => void;
   onAutoFixAll?: () => void;
   onAiVideoRender?: () => void;
@@ -65,6 +67,8 @@ export function ComposeToolbar({
   onExport,
   onSaveTemplate,
   onAiGenerate,
+  onToggleAiPanel,
+  aiPanelOpen,
   onDesignCheck,
   onAutoFixAll,
   onAiVideoRender,
@@ -126,6 +130,21 @@ export function ComposeToolbar({
       </div>
 
       <div className="flex items-center gap-1">
+        {onToggleAiPanel && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onToggleAiPanel}
+            className={`flex items-center gap-1 rounded-2xl text-xs ${
+              aiPanelOpen
+                ? `${WORKSPACE_CONTROL.accentTint} text-[#CF705A]`
+                : `${WORKSPACE_TEXT.accent} hover:text-[#CF705A]`
+            }`}
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            AI 생성
+          </Button>
+        )}
         {onAiGenerate && (
           <Button
             variant="ghost"

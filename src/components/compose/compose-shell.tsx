@@ -38,6 +38,7 @@ import { SaveTemplateDialog } from "./save-template-dialog";
 import { validateBlocks, autoFixAllBlocks } from "@/lib/design-guardrails";
 import { BLOCK_TEMPLATES } from "./block-palette";
 import { AiToolDialog } from "./ai-tool-dialog";
+import { AiGenerationPanel } from "./ai-generation-panel";
 import { DraftGeneratorDialog } from "./draft-generator-dialog";
 import { BlockContextMenu, type ContextMenuPosition } from "./block-context-menu";
 import { generateBlockText } from "@/lib/api-client";
@@ -81,6 +82,7 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
   const [bulkGenerateOpen, setBulkGenerateOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<ContextMenuPosition | null>(null);
   const [pendingBlock, setPendingBlock] = useState<{ block: Block; insertAt: number } | null>(null);
+  const [aiPanelOpen, setAiPanelOpen] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const sensors = useSensors(
@@ -461,6 +463,10 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
       setDraggingLabel(BLOCK_TYPE_LABELS[blockType as keyof typeof BLOCK_TYPE_LABELS] ?? blockType);
       return;
     }
+    if (data?.type === "ai-result") {
+      setDraggingLabel(`AI ${data.resultType === "text" ? "텍스트" : "이미지"}`);
+      return;
+    }
 
     const block = blocksRef.current.find((item) => item.id === event.active.id);
     if (block) {
@@ -629,6 +635,8 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
             onExport={handleExport}
             onSaveTemplate={handleOpenSaveTemplate}
             onAiGenerate={() => setBriefOpen(true)}
+            onToggleAiPanel={() => setAiPanelOpen(prev => !prev)}
+            aiPanelOpen={aiPanelOpen}
             onDesignCheck={handleDesignCheck}
             onAutoFixAll={handleAutoFixAll}
             onAiVideoRender={() => setAiToolType("video")}
@@ -643,6 +651,12 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
             lastSaved={lastSaved}
             theme={theme}
             onThemeChange={setTheme}
+          />
+
+          <AiGenerationPanel
+            open={aiPanelOpen}
+            onClose={() => setAiPanelOpen(false)}
+            projectId={projectId}
           />
 
           <div className="flex flex-1 overflow-hidden">
