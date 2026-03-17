@@ -61,4 +61,6 @@ Status enum: `Not Started | In Progress | Done | Blocked | Deferred`
 | EDITOR-008 | Undo/Redo (50 스택) + 자동저장 (30초) | Done | claude | Compose와 동일 패턴 |
 | EDITOR-009 | 프로젝트 이름 인라인 편집 | Done | claude | 에디터 헤더 내 편집 |
 | EDITOR-010 | 키보드 단축키 | Done | claude | Ctrl+S/Enter/Z, Esc, Delete |
-| DEPLOY-001 | Vercel 배포 | In Progress | jason | 환경변수 설정 + 첫 배포 준비 중 |
+| DEPLOY-001 | Vercel 배포 | Done | jason | https://takdizang.vercel.app (USE_MOCK=true) |
+| DEPLOY-002 | Supabase Auth URL 설정 | Not Started | jason | Site URL + Redirect URLs 설정 필요 |
+| DEPLOY-003 | Supabase migration 적용 | Not Started | jason | 5개 SQL 파일 순서대로 실행 |

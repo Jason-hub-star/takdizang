@@ -1,6 +1,6 @@
 # Takdizang Project Status
 
-Last Updated: 2026-03-17 (KST, Compose AI UX v4 — 프리뷰 위치 수정 + AI 패널 통합 + BlockTextGenerator 제거)
+Last Updated: 2026-03-17 (KST, Vercel 첫 배포 — https://takdizang.vercel.app)
 
 ## Latest Update
 
@@ -65,9 +65,14 @@ Last Updated: 2026-03-17 (KST, Compose AI UX v4 — 프리뷰 위치 수정 + AI
 - Gemini API 키 비활성 → 텍스트 생성 mock 폴백
 - 5개 Supabase migration 로컬에만 존재 (미적용)
 
+## Deployment
+- **Vercel**: `https://takdizang.vercel.app` (USE_MOCK=true)
+- **Supabase**: `fpejnupyptyxwfhvmsop` project
+
 ## Next Actions
-1. Vercel 배포 (환경변수 설정 → 첫 배포)
-2. Supabase migration 적용 (5개 파일)
-3. Supabase Auth → Google OAuth 설정
-4. `GEMINI_API_KEY`, `KIE_API_KEY` 활성화 → E2E 검증
-5. 프로덕션 모니터링 + 버그 수정
+1. Vercel `NEXT_PUBLIC_APP_URL` 환경변수 추가
+2. Supabase Auth URL 설정 (Site URL + Redirect URLs)
+3. Supabase migration 적용 (5개 파일)
+4. Google OAuth 설정 (선택)
+5. `GEMINI_API_KEY`, `KIE_API_KEY` 활성화 → E2E 검증
+6. 프로덕션 모니터링 + 버그 수정

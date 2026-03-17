@@ -1,6 +1,6 @@
 # Claude Handoff
 
-Last Updated: 2026-03-17 (KST, Compose AI UX v4 + Vercel 배포 준비)
+Last Updated: 2026-03-17 (KST, Vercel 첫 배포 완료 — https://takdizang.vercel.app)
 Branch: `main`
 
 ## Current Snapshot
@@ -81,32 +81,45 @@ supabase/migrations/20260316100200_rls_policies.sql       # RLS 정책
 방법: `npx supabase link --project-ref <ref>` → `npx supabase db push`
 또는 Supabase Dashboard SQL Editor에서 순서대로 실행.
 
-### 2. Auth Provider 설정 (필수)
+### 2. Auth URL 설정 (필수)
+Supabase Dashboard → Authentication → URL Configuration:
+- **Site URL**: `https://takdizang.vercel.app`
+- **Redirect URLs**: `https://takdizang.vercel.app/**`
+
+### 3. Auth Provider 설정 (필수)
 Supabase Dashboard → Authentication → Providers:
 - **Email**: 활성화 (기본)
 - **Google OAuth**: Client ID + Secret 설정 필요
-  - Google Cloud Console → OAuth 2.0 → Redirect URI: `https://<supabase-ref>.supabase.co/auth/v1/callback`
+  - Google Cloud Console → OAuth 2.0 → Redirect URI: `https://fpejnupyptyxwfhvmsop.supabase.co/auth/v1/callback`
 
-### 3. Storage Bucket 확인
+### 4. Storage Bucket 확인
 migration에서 자동 생성되지만 확인 필요:
 - `project-assets` (public)
 - `artifacts` (public)
 - `thumbnails` (public)
 
-### 4. Seed 데이터 (선택)
+### 5. Seed 데이터 (선택)
 `supabase/seed.sql` — 개발용 샘플 데이터. 프로덕션에서는 불필요.
 
+## Deployment
+- **Vercel**: `https://takdizang.vercel.app`
+- **Supabase**: `https://fpejnupyptyxwfhvmsop.supabase.co` (ref: `fpejnupyptyxwfhvmsop`)
+- **현재 모드**: `USE_MOCK=true` (AI 기능 placeholder)
+
 ## Important Open Issues
-- **Migration 미적용**: 5개 migration 파일이 로컬에만 존재
+- **Migration 미적용**: 5개 migration 파일 Supabase에 적용 필요
+- **Supabase Auth URL 설정 필요**: Site URL + Redirect URLs
+- `NEXT_PUBLIC_APP_URL` Vercel 환경변수 추가 필요
 - `GEMINI_API_KEY` 비활성 → 블록 텍스트 생성 mock 폴백
 - `KIE_API_KEY` 크레딧 부족 → 이미지 생성 mock 폴백
 
 ## Recommended Next Steps
-1. Supabase Dashboard에서 migration 적용 (5개 파일 순서대로)
-2. Supabase Auth → Google OAuth 설정
-3. Vercel 프로젝트 생성 → 환경변수 설정 → 배포
-4. `GEMINI_API_KEY`, `KIE_API_KEY` 활성화
-5. 프로덕션 E2E 검증
+1. Vercel 환경변수에 `NEXT_PUBLIC_APP_URL=https://takdizang.vercel.app` 추가
+2. Supabase Auth URL 설정 (Site URL + Redirect URLs)
+3. Supabase migration 적용 (5개 파일 순서대로)
+4. Google OAuth 설정 (선택)
+5. `GEMINI_API_KEY`, `KIE_API_KEY` 활성화
+6. 프로덕션 E2E 검증
 
 ## Validation Commands
 - `npm run typecheck` — 0 errors 확인
