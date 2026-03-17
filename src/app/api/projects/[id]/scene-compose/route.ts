@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getWorkspaceId, ensureWorkspaceScope } from "@/lib/workspace-guard";
+import { checkUsageLimit, UsageLimitError } from "@/lib/usage-guard";
 import { jsonOk, jsonError, jsonNotFound } from "@/lib/api-response";
 import { getProvider, getProviderLabel } from "@/services/providers/registry";
 import { downloadImageAsBase64 } from "@/services/kie-generator";
@@ -21,13 +22,14 @@ export async function POST(
   if (!scenePrompt) return jsonError("Missing scenePrompt", 400);
 
   try {
-    const workspaceId = getWorkspaceId();
+    const workspaceId = await getWorkspaceId();
+    await checkUsageLimit(workspaceId, "scene_compose_start");
 
     const project = await prisma.project.findUnique({ where: { id } });
     if (!project) return jsonNotFound("Project");
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
@@ -38,7 +40,7 @@ export async function POST(
           projectId: id,
           status: "queued",
           provider: `${getProviderLabel()}-scene-compose`,
-          input: JSON.stringify({ imageUrl, scenePrompt, aspectRatio }),
+          input: { imageUrl, scenePrompt, aspectRatio },
         },
       });
 
@@ -46,7 +48,8 @@ export async function POST(
         data: {
           workspaceId,
           eventType: "scene_compose_start",
-          detail: JSON.stringify({ projectId: id, jobId: newJob.id }),
+          detail: { projectId: id, jobId: newJob.id },
+          costEstimate: 0.10,
         },
       });
 
@@ -64,6 +67,9 @@ export async function POST(
 
     return jsonOk({ jobId: job.id, status: "queued" }, 202);
   } catch (error) {
+    if (error instanceof UsageLimitError) {
+      return jsonError(error.message, 429);
+    }
     console.error("POST /api/projects/[id]/scene-compose error:", error);
     return jsonError("Internal server error", 500);
   }
@@ -84,7 +90,7 @@ export async function GET(
     if (!project) return jsonNotFound("Project");
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
@@ -95,7 +101,7 @@ export async function GET(
     let assets: unknown[] = [];
     if (job.status === "done" && job.output) {
       try {
-        const output = JSON.parse(job.output);
+        const output = typeof job.output === "string" ? JSON.parse(job.output) : job.output;
         const assetIds = (output.assets ?? []).map((a: { assetId: string }) => a.assetId);
         assets = await prisma.asset.findMany({
           where: { id: { in: assetIds } },
@@ -148,7 +154,7 @@ async function processSceneCompose(
       where: { id: jobId },
       data: {
         status: "done",
-        output: JSON.stringify({ assets: [saved] }),
+        output: { assets: [saved] },
         doneAt: new Date(),
       },
     });

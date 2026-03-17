@@ -1,9 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { getWorkspaceId, ensureWorkspaceScope } from "@/lib/workspace-guard";
+import { checkUsageLimit, UsageLimitError } from "@/lib/usage-guard";
 import { jsonError, jsonNotFound, jsonOk } from "@/lib/api-response";
 import { resolveProjectImagePaths, resolveProjectSections } from "@/lib/project-media";
 import { saveGeneratedImage } from "@/lib/save-generated-image";
 import { downloadImageAsBase64, generateImageWithKie } from "@/services/kie-generator";
+import { getProvider, isMockMode } from "@/services/providers/registry";
 
 export async function POST(
   request: Request,
@@ -13,7 +15,9 @@ export async function POST(
   const body = await request.json().catch(() => ({}));
 
   try {
-    const workspaceId = getWorkspaceId();
+    const workspaceId = await getWorkspaceId();
+    await checkUsageLimit(workspaceId, "thumbnail_start");
+
     const project = await prisma.project.findUnique({
       where: { id },
       select: { id: true, workspaceId: true, mode: true, briefText: true, content: true, name: true, status: true },
@@ -24,7 +28,7 @@ export async function POST(
     }
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
@@ -43,15 +47,16 @@ export async function POST(
           projectId: id,
           status: "queued",
           provider: "kie-thumbnail",
-          input: JSON.stringify({ templateKey: body.templateKey ?? "1:1" }),
+          input: { templateKey: body.templateKey ?? "1:1" },
         },
       });
 
       await tx.usageLedger.create({
         data: {
           workspaceId,
-          eventType: "image_generation_start",
-          detail: JSON.stringify({ projectId: id, jobId: created.id, type: "thumbnail" }),
+          eventType: "thumbnail_start",
+          detail: { projectId: id, jobId: created.id, type: "thumbnail" },
+          costEstimate: 0.08,
         },
       });
 
@@ -70,6 +75,9 @@ export async function POST(
 
     return jsonOk({ jobId: job.id, status: "queued" }, 202);
   } catch (error) {
+    if (error instanceof UsageLimitError) {
+      return jsonError(error.message, 429);
+    }
     console.error("POST /api/projects/[id]/thumbnail error:", error);
     return jsonError("Internal server error", 500);
   }
@@ -98,7 +106,7 @@ export async function GET(
     }
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
@@ -130,7 +138,7 @@ export async function GET(
     } | null = null;
     if (job.status === "done" && job.output) {
       try {
-        const output = JSON.parse(job.output) as { artifactId?: string };
+        const output = (typeof job.output === "string" ? JSON.parse(job.output) : job.output) as { artifactId?: string };
         if (output.artifactId) {
           artifact = await prisma.exportArtifact.findUnique({
             where: { id: output.artifactId },
@@ -201,21 +209,36 @@ async function processThumbnail(
       sections: resolved.sections,
     });
 
-    const result = await generateImageWithKie(prompt, {
-      aspectRatio: "1:1",
-      imageInput: [toAbsoluteUrl(imagePaths[0])],
-      resolution: "1K",
-    });
+    let imageBytes: string;
+    let mimeType: string;
 
-    const image = await downloadImageAsBase64(result.imageUrls[0]);
-    const saved = await saveGeneratedImage(options.projectId, image.imageBytes, image.mimeType, "thumbnail");
+    if (isMockMode()) {
+      const provider = getProvider();
+      const result = await provider.textToImage({ prompt, aspectRatio: "1:1" });
+      const dataUri = result.imageUrls[0];
+      const match = dataUri.match(/^data:([^;]+);base64,(.+)$/);
+      if (!match) throw new Error("Invalid mock data URI");
+      mimeType = match[1];
+      imageBytes = match[2];
+    } else {
+      const result = await generateImageWithKie(prompt, {
+        aspectRatio: "1:1",
+        imageInput: [toAbsoluteUrl(imagePaths[0])],
+        resolution: "1K",
+      });
+      const image = await downloadImageAsBase64(result.imageUrls[0]);
+      imageBytes = image.imageBytes;
+      mimeType = image.mimeType;
+    }
+
+    const saved = await saveGeneratedImage(options.projectId, imageBytes, mimeType, "thumbnail");
 
     const artifact = await prisma.exportArtifact.create({
       data: {
         projectId: options.projectId,
         type: "thumbnail",
         filePath: saved.filePath,
-        metadata: JSON.stringify({ sourceAsset: imagePaths[0], templateKey: options.templateKey }),
+        metadata: { sourceAsset: imagePaths[0], templateKey: options.templateKey },
       },
     });
 
@@ -223,7 +246,7 @@ async function processThumbnail(
       where: { id: jobId },
       data: {
         status: "done",
-        output: JSON.stringify({ artifactId: artifact.id }),
+        output: { artifactId: artifact.id },
         doneAt: new Date(),
       },
     });

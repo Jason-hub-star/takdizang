@@ -76,6 +76,7 @@ export async function POST(
           workspaceId,
           eventType: "generation_start",
           detail: { projectId: id, jobId: newJob.id },
+          costEstimate: 0.05,
         },
       });
 

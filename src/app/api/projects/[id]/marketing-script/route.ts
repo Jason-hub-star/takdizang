@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getWorkspaceId, ensureWorkspaceScope } from "@/lib/workspace-guard";
+import { checkUsageLimit, UsageLimitError } from "@/lib/usage-guard";
 import { jsonError, jsonNotFound, jsonOk } from "@/lib/api-response";
 import { resolveProjectSections } from "@/lib/project-media";
 import { saveTextArtifactFile } from "@/lib/save-artifact-file";
@@ -16,7 +17,9 @@ export async function POST(
   const body = await request.json().catch(() => ({}));
 
   try {
-    const workspaceId = getWorkspaceId();
+    const workspaceId = await getWorkspaceId();
+    await checkUsageLimit(workspaceId, "marketing_script_start");
+
     const project = await prisma.project.findUnique({
       where: { id },
       select: { id: true, workspaceId: true, mode: true, briefText: true, content: true, name: true, status: true },
@@ -27,7 +30,7 @@ export async function POST(
     }
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
@@ -46,15 +49,16 @@ export async function POST(
           projectId: id,
           status: "queued",
           provider: "gemini-marketing-script",
-          input: JSON.stringify({ templateKey: body.templateKey ?? "9:16" }),
+          input: { templateKey: body.templateKey ?? "9:16" },
         },
       });
 
       await tx.usageLedger.create({
         data: {
           workspaceId,
-          eventType: "generation_start",
-          detail: JSON.stringify({ projectId: id, jobId: created.id, type: "marketing-script" }),
+          eventType: "marketing_script_start",
+          detail: { projectId: id, jobId: created.id, type: "marketing-script" },
+          costEstimate: 0.05,
         },
       });
 
@@ -73,6 +77,9 @@ export async function POST(
 
     return jsonOk({ jobId: job.id, status: "queued" }, 202);
   } catch (error) {
+    if (error instanceof UsageLimitError) {
+      return jsonError(error.message, 429);
+    }
     console.error("POST /api/projects/[id]/marketing-script error:", error);
     return jsonError("Internal server error", 500);
   }
@@ -101,7 +108,7 @@ export async function GET(
     }
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
@@ -133,7 +140,7 @@ export async function GET(
     } | null = null;
     if (job.status === "done" && job.output) {
       try {
-        const output = JSON.parse(job.output) as { artifactId?: string; script?: unknown };
+        const output = (typeof job.output === "string" ? JSON.parse(job.output) : job.output) as { artifactId?: string; script?: unknown };
         if (output.artifactId) {
           artifact = await prisma.exportArtifact.findUnique({
             where: { id: output.artifactId },
@@ -207,7 +214,7 @@ async function processMarketingScript(
         projectId: options.projectId,
         type: "marketing-script",
         filePath,
-        metadata: JSON.stringify({ script }),
+        metadata: { script },
       },
     });
 
@@ -215,7 +222,7 @@ async function processMarketingScript(
       where: { id: jobId },
       data: {
         status: "done",
-        output: JSON.stringify({ artifactId: artifact.id, script }),
+        output: { artifactId: artifact.id, script },
         doneAt: new Date(),
       },
     });

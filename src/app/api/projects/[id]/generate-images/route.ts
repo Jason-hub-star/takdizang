@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { getWorkspaceId, ensureWorkspaceScope } from "@/lib/workspace-guard";
+import { checkUsageLimit, UsageLimitError } from "@/lib/usage-guard";
 import { jsonOk, jsonError, jsonNotFound } from "@/lib/api-response";
 import type { GenerationResultSection } from "@/types";
-import { getProvider, getProviderLabel } from "@/services/providers/registry";
+import { getProvider, getProviderLabel, isMockMode } from "@/services/providers/registry";
 import { downloadImageAsBase64 } from "@/services/kie-generator";
 import { saveGeneratedImage } from "@/lib/save-generated-image";
 
@@ -19,13 +20,14 @@ export async function POST(
   const body = await request.json().catch(() => ({}));
 
   try {
-    const workspaceId = getWorkspaceId();
+    const workspaceId = await getWorkspaceId();
+    await checkUsageLimit(workspaceId, "image_generation_start");
 
     const project = await prisma.project.findUnique({ where: { id } });
     if (!project) return jsonNotFound("Project");
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
@@ -41,7 +43,7 @@ export async function POST(
     // Parse sections from project content
     let sections: GenerationResultSection[];
     try {
-      const content = JSON.parse(project.content ?? "{}");
+      const content = typeof project.content === "string" ? JSON.parse(project.content ?? "{}") : (project.content ?? {});
       sections = content.sections ?? [];
     } catch {
       return jsonError("Invalid project content: cannot parse sections", 400);
@@ -68,12 +70,12 @@ export async function POST(
           projectId: id,
           status: "queued",
           provider: getProviderLabel(),
-          input: JSON.stringify({
+          input: {
             slots: targetSections.map((s) => s.imageSlot),
             aspectRatio: body.aspectRatio ?? "1:1",
             styleParams: body.styleParams ?? {},
             referenceAssetIds: Array.isArray(body.referenceAssetIds) ? body.referenceAssetIds.slice(0, 3) : [],
-          }),
+          },
         },
       });
 
@@ -81,11 +83,12 @@ export async function POST(
         data: {
           workspaceId,
           eventType: "image_generation_start",
-          detail: JSON.stringify({
+          detail: {
             projectId: id,
             jobId: newJob.id,
             slotCount: targetSections.length,
-          }),
+          },
+          costEstimate: 0.08,
         },
       });
 
@@ -102,6 +105,9 @@ export async function POST(
 
     return jsonOk({ jobId: job.id, status: "queued" }, 202);
   } catch (error) {
+    if (error instanceof UsageLimitError) {
+      return jsonError(error.message, 429);
+    }
     console.error("POST /api/projects/[id]/generate-images error:", error);
     return jsonError("Internal server error", 500);
   }
@@ -128,7 +134,7 @@ export async function GET(
     if (!project) return jsonNotFound("Project");
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
@@ -145,7 +151,7 @@ export async function GET(
     let assets: unknown[] = [];
     if (job.status === "done" && job.output) {
       try {
-        const output = JSON.parse(job.output);
+        const output = typeof job.output === "string" ? JSON.parse(job.output) : job.output;
         const assetIds = (output.assets ?? []).map(
           (a: { assetId: string }) => a.assetId
         );
@@ -220,6 +226,7 @@ async function processImageGeneration(
       : [];
 
     const assets: { assetId: string; filePath: string; imageSlot: string }[] = [];
+    const mock = isMockMode();
     for (const section of sections) {
       const prompt = `${section.headline}. ${section.body}`;
       const result = await provider.textToImage({
@@ -227,12 +234,27 @@ async function processImageGeneration(
         aspectRatio: options.aspectRatio,
         imageInput: referenceInputs,
       });
-      // Download the first result URL and save as base64
-      const img = await downloadImageAsBase64(result.imageUrls[0]);
+
+      let imageBytes: string;
+      let mimeType: string;
+
+      const resultUrl = result.imageUrls[0];
+      if (mock && resultUrl.startsWith("data:")) {
+        // Mock provider returns data URIs — extract base64 directly
+        const match = resultUrl.match(/^data:([^;]+);base64,(.+)$/);
+        if (!match) throw new Error("Invalid mock data URI");
+        mimeType = match[1];
+        imageBytes = match[2];
+      } else {
+        const img = await downloadImageAsBase64(resultUrl);
+        imageBytes = img.imageBytes;
+        mimeType = img.mimeType;
+      }
+
       const saved = await saveGeneratedImage(
         projectId,
-        img.imageBytes,
-        img.mimeType,
+        imageBytes,
+        mimeType,
         section.imageSlot,
       );
       assets.push({ ...saved, imageSlot: section.imageSlot });
@@ -243,7 +265,7 @@ async function processImageGeneration(
       where: { id: jobId },
       data: {
         status: "done",
-        output: JSON.stringify({ assets }),
+        output: { assets },
         doneAt: new Date(),
       },
     });

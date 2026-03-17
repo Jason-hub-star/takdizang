@@ -2,8 +2,9 @@
 
 import { prisma } from "@/lib/prisma";
 import { getWorkspaceId, ensureWorkspaceScope } from "@/lib/workspace-guard";
+import { checkUsageLimit, UsageLimitError } from "@/lib/usage-guard";
 import { jsonOk, jsonError, jsonNotFound } from "@/lib/api-response";
-import { getProvider } from "@/services/providers/registry";
+import { getProvider, isMockMode } from "@/services/providers/registry";
 import { downloadImageAsBase64 } from "@/services/kie-generator";
 import { saveGeneratedImage } from "@/lib/save-generated-image";
 
@@ -20,13 +21,14 @@ export async function POST(
   }
 
   try {
-    const workspaceId = getWorkspaceId();
+    const workspaceId = await getWorkspaceId();
+    await checkUsageLimit(workspaceId, "remove_bg_start");
 
     const project = await prisma.project.findUnique({ where: { id } });
     if (!project) return jsonNotFound("Project");
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
@@ -43,7 +45,7 @@ export async function POST(
           projectId: id,
           status: "queued",
           provider: `${providerName}-remove-background`,
-          input: JSON.stringify({ assetId }),
+          input: { assetId },
         },
       });
 
@@ -51,7 +53,8 @@ export async function POST(
         data: {
           workspaceId,
           eventType: "remove_bg_start",
-          detail: JSON.stringify({ projectId: id, jobId: newJob.id, assetId }),
+          detail: { projectId: id, jobId: newJob.id, assetId },
+          costEstimate: 0.02,
         },
       });
 
@@ -64,6 +67,9 @@ export async function POST(
 
     return jsonOk({ jobId: job.id, status: "queued" }, 202);
   } catch (error) {
+    if (error instanceof UsageLimitError) {
+      return jsonError(error.message, 429);
+    }
     console.error("POST /api/projects/[id]/remove-bg error:", error);
     return jsonError("Internal server error", 500);
   }
@@ -86,7 +92,7 @@ export async function GET(
     if (!project) return jsonNotFound("Project");
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
@@ -99,7 +105,7 @@ export async function GET(
     let assets: unknown[] = [];
     if (job.status === "done" && job.output) {
       try {
-        const output = JSON.parse(job.output);
+        const output = typeof job.output === "string" ? JSON.parse(job.output) : job.output;
         const assetIds = (output.assets ?? []).map((a: { assetId: string }) => a.assetId);
         assets = await prisma.asset.findMany({
           where: { id: { in: assetIds } },
@@ -141,8 +147,27 @@ async function processRemoveBg(jobId: string, projectId: string, assetFilePath: 
     const imageUrl = `${baseUrl}/${assetFilePath.replace(/\\/g, "/")}`;
 
     const result = await provider.removeBackground({ imageUrl });
-    const img = await downloadImageAsBase64(result.imageUrls[0]);
-    const saved = await saveGeneratedImage(projectId, img.imageBytes, "image/png", "removebg");
+
+    let imageBytes: string;
+    let mimeType: string;
+
+    const resultUrl = result.imageUrls[0];
+    if (isMockMode() && resultUrl.startsWith("data:")) {
+      const match = resultUrl.match(/^data:([^;]+);base64,(.+)$/);
+      if (!match) throw new Error("Invalid mock data URI");
+      mimeType = match[1];
+      imageBytes = match[2];
+    } else if (isMockMode()) {
+      // Mock removeBackground returns original URL — create a placeholder
+      mimeType = "image/png";
+      imageBytes = Buffer.from("<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'/>").toString("base64");
+    } else {
+      const img = await downloadImageAsBase64(resultUrl);
+      imageBytes = img.imageBytes;
+      mimeType = img.mimeType;
+    }
+
+    const saved = await saveGeneratedImage(projectId, imageBytes, mimeType, "removebg");
 
     await prisma.$transaction([
       prisma.project.update({
@@ -153,7 +178,7 @@ async function processRemoveBg(jobId: string, projectId: string, assetFilePath: 
         where: { id: jobId },
         data: {
           status: "done",
-          output: JSON.stringify({ assets: [saved] }),
+          output: { assets: [saved] },
           doneAt: new Date(),
         },
       }),

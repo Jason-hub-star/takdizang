@@ -9,7 +9,7 @@ export async function POST(
   try {
     const { id } = await params;
     const body = await request.json().catch(() => ({}));
-    const workspaceId = getWorkspaceId();
+    const workspaceId = await getWorkspaceId();
 
     const project = await prisma.project.findUnique({
       where: { id },
@@ -18,7 +18,7 @@ export async function POST(
     if (!project) return jsonNotFound("Project");
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
@@ -33,7 +33,7 @@ export async function POST(
           projectId: id,
           status: "queued",
           provider: "export",
-          input: JSON.stringify({ type: body.type ?? "result" }),
+          input: { type: body.type ?? "result" },
         },
       });
 
@@ -41,7 +41,8 @@ export async function POST(
         data: {
           workspaceId,
           eventType: "export_start",
-          detail: JSON.stringify({ projectId: id, jobId: exportJob.id }),
+          detail: { projectId: id, jobId: exportJob.id },
+          costEstimate: 0.01,
         },
       });
 
@@ -79,7 +80,7 @@ export async function GET(
     if (!project) return jsonNotFound("Project");
 
     try {
-      ensureWorkspaceScope(project.workspaceId);
+      await ensureWorkspaceScope(project.workspaceId);
     } catch {
       return jsonError("Forbidden: workspace scope violation", 403);
     }
@@ -112,7 +113,7 @@ export async function GET(
     }> = [];
     if (job.status === "done" && job.output) {
       try {
-        const output = JSON.parse(job.output) as { artifactIds?: string[] };
+        const output = (typeof job.output === "string" ? JSON.parse(job.output) : job.output) as { artifactIds?: string[] };
         if (output.artifactIds?.length) {
           artifacts = await prisma.exportArtifact.findMany({
             where: { id: { in: output.artifactIds } },
@@ -178,7 +179,7 @@ async function processExport(jobId: string, projectId: string, workspaceId: stri
         data: {
           workspaceId,
           eventType: "export_complete",
-          detail: JSON.stringify({ projectId, artifactIds: artifacts.map((artifact) => artifact.id) }),
+          detail: { projectId, artifactIds: artifacts.map((artifact) => artifact.id) },
         },
       });
 
@@ -186,7 +187,7 @@ async function processExport(jobId: string, projectId: string, workspaceId: stri
         where: { id: jobId },
         data: {
           status: "done",
-          output: JSON.stringify({ artifactIds: artifacts.map((artifact) => artifact.id) }),
+          output: { artifactIds: artifacts.map((artifact) => artifact.id) },
           doneAt: new Date(),
         },
       });

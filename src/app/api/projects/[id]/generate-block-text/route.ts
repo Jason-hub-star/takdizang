@@ -1,7 +1,8 @@
 /** POST /api/projects/:id/generate-block-text — 블록 타입별 AI 문구 생성 */
 import { GoogleGenAI } from "@google/genai";
 import { prisma } from "@/lib/prisma";
-import { ensureWorkspaceScope } from "@/lib/workspace-guard";
+import { getWorkspaceId, ensureWorkspaceScope } from "@/lib/workspace-guard";
+import { checkUsageLimit, UsageLimitError, COST_ESTIMATES } from "@/lib/usage-guard";
 import { jsonOk, jsonError, jsonNotFound } from "@/lib/api-response";
 
 const MODEL = "gemini-2.5-flash";
@@ -303,6 +304,9 @@ export async function POST(
       return jsonError(`Unsupported block type: ${blockType}`, 400);
     }
 
+    const workspaceId = await getWorkspaceId();
+    await checkUsageLimit(workspaceId, "block_text_generate");
+
     const project = await prisma.project.findUnique({
       where: { id },
       select: { workspaceId: true, briefText: true, name: true },
@@ -348,8 +352,21 @@ export async function POST(
     }
 
     const result = JSON.parse(text);
+
+    await prisma.usageLedger.create({
+      data: {
+        workspaceId,
+        eventType: "block_text_generate",
+        detail: { projectId: id, blockType },
+        costEstimate: COST_ESTIMATES.block_text_generate ?? null,
+      },
+    });
+
     return jsonOk({ blockType, result });
   } catch (error) {
+    if (error instanceof UsageLimitError) {
+      return jsonError(error.message, 429);
+    }
     console.error("POST /api/projects/[id]/generate-block-text error:", error);
     return jsonError("Internal server error", 500);
   }
