@@ -112,7 +112,7 @@ function VideoRenderTool({ projectId, messages }: { projectId: string; messages:
     } finally {
       setRunning(false);
     }
-  }, [projectId, running]);
+  }, [projectId, running, messages.aiTools.videoRender.successToast, messages.aiTools.videoRender.failedToast]);
 
   return (
     <div className="space-y-4">
@@ -189,7 +189,7 @@ function ThumbnailTool({ projectId, messages }: { projectId: string; messages: M
     } finally {
       setRunning(false);
     }
-  }, [projectId, running]);
+  }, [projectId, running, messages.aiTools.thumbnail.successToast, messages.aiTools.thumbnail.failedToast]);
 
   return (
     <div className="space-y-4">
@@ -288,7 +288,7 @@ function MarketingScriptTool({ projectId, messages }: { projectId: string; messa
     } finally {
       setRunning(false);
     }
-  }, [projectId, running]);
+  }, [projectId, running, messages.aiTools.marketingScript.successToast, messages.aiTools.marketingScript.failedToast, messages.aiTools.marketingScript.parseFailed]);
 
   const handleCopy = useCallback(async () => {
     if (!scriptText) return;
@@ -296,7 +296,7 @@ function MarketingScriptTool({ projectId, messages }: { projectId: string; messa
     setCopied(true);
     toast.success(messages.aiTools.marketingScript.copiedToast);
     setTimeout(() => setCopied(false), 2000);
-  }, [scriptText]);
+  }, [scriptText, messages.aiTools.marketingScript.copiedToast]);
 
   return (
     <div className="space-y-4">
