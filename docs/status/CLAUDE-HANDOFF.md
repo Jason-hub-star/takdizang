@@ -1,9 +1,13 @@
 # Claude Handoff
 
-Last Updated: 2026-03-25 (KST, 디자인 토큰 리팩토링 완료)
+Last Updated: 2026-03-25 (KST, UX 텍스트 리라이팅 + i18n 구조 확장)
 Branch: `main`
 
 ## Current Snapshot
+- **설정 페이지 프로덕션 업그레이드**: 개발자 정보 제거, 4개 탭 (내 계정/사용량/워크스페이스/AI 프로바이더), Settings API 4개, 공유 컴포넌트 표준화
+- **UX 텍스트 프로덕션 리라이팅**: 41파일 해요체 통일, 친절한 안내 문구, word-break: keep-all 한글 줄바꿈
+- **i18n 구조 확장**: MessageSchema + ko.ts + useT() hook, editor/aiTools/exportDialog/composeToasts 섹션 추가
+- **CI 전체 통과**: React Compiler 규칙 조정, ref/any/module 에러 수정, Playwright 스냅샷 갱신
 - **디자인 토큰 리팩토링 완료**: globals.css에 22개 CSS 변수 + 5개 블록 클래스 추가, 17개 블록 렌더러 + 40개 컴포넌트 하드코딩 제거
 - **Auth 시스템 구현 완료**: Supabase Auth (email + Google OAuth) + 미들웨어 세션 가드
 - **RLS 전면 적용**: 9개 테이블에 workspace 기반 격리 정책
@@ -13,18 +17,37 @@ Branch: `main`
 - **컴포즈 AI 통합**: BlockTextGenerator 제거 → 우측 패널 "AI 생성" 탭(AiGenerateTab)으로 단일화
 - **블록 사이 삽입 프리뷰**: ghost block이 insertAt 위치에 정확히 표시
 - **AI 도구 모달**: 영상 렌더링/썸네일/스크립트 → 툴바 드롭다운 → 모달
-- **Editor 노드 그래프**: React Flow 기반, 6개 모드, Simple/Expert 뷰
+- **Editor 노드 그래프**: React Flow 기반, 6개 모드, 구조보기(Expert) 단일 뷰
 - **Compose/Editor 독립 병렬 동작**: 같은 `project.content` 필드, mode로 포맷 분리
 
 ## Editor State
 - `src/components/editor/node-editor-shell.tsx` — React Flow 노드 그래프 에디터 코어
 - 6개 모드: shortform-video, model-shot, cutout, brand-image, freeform, gif-source
-- Simple 뷰: 가이드 4개 모드 (Step Editor 위저드, 3그룹 분류)
-- Expert 뷰: 자유 2개 모드 (freeform, gif-source)
+- 구조보기(Expert) 단일 뷰 (Simple 모드 제거 완료)
+- 가이드형 모드: 구조 읽기 전용 + 검증/복구 UI 유지
+- 자유형 모드: 노드 추가/복제/엣지 편집 가능
 - 파이프라인: prompt → generate-images → bgm → cuts → render → export
 - 저장: `PATCH /api/projects/[id]/content` → EditorGraph (nodes/edges/shortform)
 
-## Recent Changes (2026-03-17, Compose AI UX v4)
+## Recent Changes (2026-03-25, UX 텍스트 리라이팅 + i18n)
+
+### UX 텍스트 프로덕션 리라이팅
+- 41파일 해요체 통일 (합니다체 → 해요체), 개발 용어 → 사용자 친화 용어
+- `globals.css` — `word-break: keep-all` + `overflow-wrap: break-word` 한글 줄바꿈
+- 참고 패턴: Toss 8원칙, 배민, Canva UX writing
+
+### i18n 구조 확장
+- `src/i18n/schema.ts` — MessageSchema 확장 (editor.toasts/labels, aiTools, exportDialog, composeToasts)
+- `src/i18n/messages/ko.ts` — 전체 한국어 값
+- `src/i18n/use-t.ts` — `useT()` hook (client), `getMessages()` (server)
+- 3개 파일 i18n 전환 완료: node-editor-shell, ai-tool-dialog, export-dialog
+
+### CI 수정
+- `eslint.config.mjs` — React Compiler 4개 규칙 Error→Warning 다운그레이드
+- `block-canvas.tsx`, `node-canvas.tsx` — ref-during-render → useEffect 래핑
+- `remotion-player-runtime.tsx` — ComponentType<any> + eslint-disable 유지
+
+## Previous Changes (2026-03-17, Compose AI UX v4)
 
 ### Phase 1: 블록 사이 삽입 프리뷰 위치 반영
 - `compose-shell.tsx` — `handlePreviewBlock`이 `insertIndex` 소비, `handleConfirmPlace`가 `splice(insertAt)` 사용

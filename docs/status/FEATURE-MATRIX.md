@@ -1,6 +1,6 @@
 # Feature Matrix
 
-Last Updated: 2026-03-25 (KST, Design Token Refactoring 반영)
+Last Updated: 2026-03-25 (KST, UX 텍스트 리라이팅 + i18n 반영)
 Status enum: `Not Started | In Progress | Done | Blocked | Deferred`
 
 | ID | Feature | Status | Owner | Notes |
@@ -53,9 +53,9 @@ Status enum: `Not Started | In Progress | Done | Blocked | Deferred`
 | JSONB-001 | JSON.parse/stringify JSONB compatibility | Done | claude | parseJsonField 유틸 + 20+ 파일 안전 파싱 전환 |
 | EDITOR-001 | React Flow 노드 그래프 에디터 | Done | claude | node-editor-shell.tsx 기반 그래프 편집 |
 | EDITOR-002 | 6개 모드별 파이프라인 실행 | Done | claude | shortform-video, model-shot, cutout, brand-image, freeform, gif-source |
-| EDITOR-003 | Simple/Expert 뷰 모드 전환 | Done | claude | 가이드 4개 모드(simple) + 자유 2개 모드(expert) |
+| EDITOR-003 | 구조보기(Expert) 단일 뷰 | Done | claude | Simple 모드 제거 완료, 가이드형 읽기전용 + 자유형 편집 |
 | EDITOR-004 | 가이드 그래프 검증 + 자동 복구 UI | Done | claude | 누락 노드/엣지 감지 → 자동 복구 |
-| EDITOR-005 | Step Editor 위저드 (simple 모드) | Done | claude | 3그룹 분류 단계별 편집 |
+| EDITOR-005 | ~~Step Editor 위저드~~ | Removed | claude | Simple 모드와 함께 제거 (b385eca) |
 | EDITOR-006 | Remotion 프리뷰 (3비율) + 내보내기 폴링 | Done | claude | 9:16, 1:1, 16:9 비율 + 렌더링 상태 폴링 |
 | EDITOR-007 | 에셋 업로드 (이미지/BGM) | Done | claude | 인라인 라이트박스 + BGM 업로드 |
 | EDITOR-008 | Undo/Redo (50 스택) + 자동저장 (30초) | Done | claude | Compose와 동일 패턴 |
@@ -65,6 +65,15 @@ Status enum: `Not Started | In Progress | Done | Blocked | Deferred`
 | TOKEN-002 | Block state CSS classes | Done | claude | .takdi-block, .takdi-block-selected/-fill/-default, .takdi-add-button |
 | TOKEN-003 | Block renderer token unification (17 files) | Done | claude | 하드코딩 selected/hover/default → CSS 클래스 통일 |
 | TOKEN-004 | Remaining component token migration (40+ files) | Done | claude | hex/rgb → var() 참조 (compose, layout, home, auth) |
+| UX-001 | UX 텍스트 프로덕션 리라이팅 | Done | claude | 41파일 해요체 통일, 개발 용어→사용자 친화 용어 |
+| UX-002 | 한글 줄바꿈 (word-break: keep-all) | Done | claude | globals.css + overflow-wrap: break-word |
+| UX-003 | i18n 구조 확장 | Done | claude | MessageSchema + ko.ts + useT() hook, 4개 섹션 |
+| UX-004 | Playwright 스냅샷 갱신 | Done | claude | 11개 PNG 베이스라인 재생성 |
+| SETTINGS-001 | 설정 페이지 탭 구조 전환 | Done | claude | 개발자 정보 제거, 4개 탭 (내 계정/사용량/워크스페이스/프로바이더) |
+| SETTINGS-002 | 프로필 편집 + 아바타 업로드 | Done | claude | GET/PATCH profile, POST avatar, InlineEdit 컴포넌트 |
+| SETTINGS-003 | 타입별 사용량 프로그레스바 | Done | claude | FREE_LIMITS 10개 타입별 used/limit 시각화 |
+| SETTINGS-004 | AI 프로바이더 연결 상태 | Done | claude | Kie.ai/Gemini/Remotion 상태 카드 (env vars 기반) |
+| SHARED-001 | 공유 컴포넌트 표준화 | Done | claude | SummaryCard, InlineEdit, UsageProgressBar, .takdi-activity-item |
 | DEPLOY-001 | Vercel 배포 | Done | jason | https://takdizang.vercel.app (USE_MOCK=true) |
 | DEPLOY-002 | Supabase Auth URL 설정 | Not Started | jason | Site URL + Redirect URLs 설정 필요 |
 | DEPLOY-003 | Supabase migration 적용 | Not Started | jason | 5개 SQL 파일 순서대로 실행 |

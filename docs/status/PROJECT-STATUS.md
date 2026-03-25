@@ -1,8 +1,21 @@
 # Takdizang Project Status
 
-Last Updated: 2026-03-25 (KST, 디자인 토큰 리팩토링)
+Last Updated: 2026-03-25 (KST, UX 텍스트 리라이팅 + i18n)
 
 ## Latest Update
+
+### 설정 페이지 프로덕션 업그레이드 (2026-03-25)
+- **개발자 정보 제거**: 시스템 정보(Next.js/Supabase 버전), 저장소 정보(DB URL, 업로드 경로) 완전 제거
+- **4개 탭 구조**: 내 계정(프로필/비밀번호/연결계정), 사용량(월간+타입별 프로그레스바), 워크스페이스(이름편집/통계), AI 프로바이더(연결 상태)
+- **Settings API 4개**: profile GET/PATCH, avatar POST, workspace PATCH, password POST
+- **공유 컴포넌트 표준화**: SummaryCard, InlineEdit, UsageProgressBar, .takdi-activity-item
+
+### UX 텍스트 프로덕션 리라이팅 + i18n (2026-03-25)
+- **해요체 통일**: 41파일의 합니다체/개발 용어 → 해요체/사용자 친화 용어로 리라이팅
+- **한글 줄바꿈**: `globals.css`에 `word-break: keep-all` + `overflow-wrap: break-word`
+- **i18n 구조 확장**: `MessageSchema` + `ko.ts` + `useT()` hook, editor/aiTools/exportDialog/composeToasts 섹션
+- **CI 전체 통과**: React Compiler 규칙 조정, ref 패턴 수정, Playwright 스냅샷 갱신
+- **테스트**: 9파일 181테스트 통과, Playwright 12개 시각 테스트 통과
 
 ### Design Token Refactoring (2026-03-25)
 - **CSS 변수 22개 추가**: `--takdi-radius-*` (4단계), block-state 색상 (5개), shadow scale (4개), accent-tint/soft/inset/delete 토큰
@@ -46,7 +59,7 @@ Last Updated: 2026-03-25 (KST, 디자인 토큰 리팩토링)
 ### Editor — 영상·이미지 파이프라인 허브
 - React Flow 기반 노드 그래프 에디터
 - 6개 모드: shortform-video, model-shot, cutout, brand-image, freeform, gif-source
-- Simple/Expert 뷰 모드 (가이드 4개 모드 + 자유 2개 모드)
+- 구조보기(Expert) 단일 뷰 (Simple 모드 제거 완료, 가이드형/자유형 분리)
 - 전체 파이프라인 실행: prompt → generate-images → bgm → cuts → render → export
 - `PATCH /api/projects/[id]/content`로 EditorGraph 저장
 
@@ -59,14 +72,15 @@ Last Updated: 2026-03-25 (KST, 디자인 토큰 리팩토링)
   - auth routes: `/login`, `/signup`, `/auth/callback`
 - API surface: 25+ route handlers
 - 컴포즈 AI 기능: AiGenerateTab (드래그드롭) + SceneCompose + ModelCompose + RemoveBg + ImageGenerate + AI Tool Dialog
-- 에디터 기능: React Flow 노드 에디터 × 6개 모드 + Simple/Expert 뷰 + 파이프라인 실행
+- 에디터 기능: React Flow 노드 에디터 × 6개 모드 + 구조보기 단일 뷰 + 파이프라인 실행
 - Playwright visual test: 12개 (4 pages × 3 viewports)
 
 ## Validation
 - `npm run build`
 - `npm run typecheck` — 에러 0
-- `npm test` — 8파일 104테스트 통과
-- `npx playwright test` — 12개 시각 테스트 통과
+- `npm test` — 9파일 181테스트 통과
+- Settings API: profile, avatar, workspace, password
+- `npx playwright test` — 12개 시각 테스트 통과 (스냅샷 갱신 완료)
 
 ## Known Risks
 - Kie API 크레딧 부족으로 이미지 생성 mock 폴백
