@@ -65,42 +65,6 @@ export default async function SettingsPage() {
         />
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-2">
-        <div className="takdi-panel-strong rounded-[1.9rem] p-6">
-          <h2 className="text-lg font-semibold text-[var(--takdi-text)]">{messages.settingsPage.runtimeSummaryTitle}</h2>
-          <dl className="mt-4 space-y-3 text-sm">
-            <div className="flex items-start justify-between gap-4">
-              <dt className="text-[var(--takdi-text-muted)]">{messages.settingsPage.nextJs}</dt>
-              <dd className="text-right text-[var(--takdi-text)]">{summary.nextVersion}</dd>
-            </div>
-            <div className="flex items-start justify-between gap-4">
-              <dt className="text-[var(--takdi-text-muted)]">{messages.settingsPage.prisma}</dt>
-              <dd className="text-right text-[var(--takdi-text)]">{summary.prismaVersion}</dd>
-            </div>
-            <div className="flex items-start justify-between gap-4">
-              <dt className="text-[var(--takdi-text-muted)]">{messages.settingsPage.remotionPreview}</dt>
-              <dd className="text-right text-[var(--takdi-text)]">
-                {summary.remotionPreviewEnabled ? messages.settingsPage.enabled : messages.settingsPage.disabled}
-              </dd>
-            </div>
-          </dl>
-        </div>
-
-        <div className="takdi-panel-strong rounded-[1.9rem] p-6">
-          <h2 className="text-lg font-semibold text-[var(--takdi-text)]">{messages.settingsPage.storageSummaryTitle}</h2>
-          <dl className="mt-4 space-y-3 text-sm">
-            <div>
-              <dt className="text-[var(--takdi-text-muted)]">{messages.settingsPage.database}</dt>
-              <dd className="mt-1 break-all text-[var(--takdi-text)]">{summary.databaseUrl}</dd>
-            </div>
-            <div>
-              <dt className="text-[var(--takdi-text-muted)]">{messages.settingsPage.uploadsPath}</dt>
-              <dd className="mt-1 break-all text-[var(--takdi-text)]">{summary.uploadsPath}</dd>
-            </div>
-          </dl>
-        </div>
-      </section>
-
       <section className="space-y-4">
         <div className="flex items-end justify-between gap-4">
           <div>

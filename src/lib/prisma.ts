@@ -8,7 +8,8 @@ type ModelName =
   | "generationJob"
   | "exportArtifact"
   | "usageLedger"
-  | "composeTemplate";
+  | "composeTemplate"
+  | "profile";
 
 type QueryArgs = {
   where?: Record<string, unknown>;
@@ -32,6 +33,7 @@ const TABLES: Record<ModelName, string> = {
   exportArtifact: "export_artifacts",
   usageLedger: "usage_ledger",
   composeTemplate: "compose_templates",
+  profile: "profiles",
 };
 
 const UPDATED_AT_MODELS = new Set<ModelName>([
@@ -614,6 +616,7 @@ export const prisma = {
   exportArtifact: createModel("exportArtifact"),
   usageLedger: createModel("usageLedger"),
   composeTemplate: createModel("composeTemplate"),
+  profile: createModel("profile"),
   async $transaction<T>(
     input: Promise<T>[] | ((tx: typeof prisma) => Promise<T>),
   ): Promise<T[] | T> {

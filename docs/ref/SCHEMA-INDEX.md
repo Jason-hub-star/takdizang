@@ -28,6 +28,10 @@
   - `id`, `workspace_id`, `event_type`, `detail`, `cost_estimate`, `created_at`
 - `compose_templates`
   - `id`, `workspace_id`, `name`, `snapshot`, `preview_title`, `block_count`, `source_project_id`, timestamps
+- `profiles`
+  - `id`, `user_id`, `display_name`, `avatar_url`, `created_at`, `updated_at`
+- `workspace_members`
+  - `workspace_id`, `user_id`, `role`, `created_at`
 
 ## Storage Buckets
 - `project-assets`
@@ -80,5 +84,11 @@
   - `POST /api/compose-templates/[id]/instantiate`
 - Workspace
   - `GET /api/workspace/assets` — 워크스페이스 전체 에셋 조회 (프로젝트별 그룹)
+- Settings
+  - `GET /api/settings/profile` — 프로필 조회
+  - `PATCH /api/settings/profile` — displayName 수정
+  - `POST /api/settings/profile/avatar` — 아바타 업로드
+  - `PATCH /api/settings/workspace` — 워크스페이스 이름 변경
+  - `POST /api/settings/password` — 비밀번호 변경
 - Usage
   - `GET /api/usage/me` — 현재 워크스페이스 사용량 조회

@@ -20,6 +20,9 @@ Next.js App Router routes, pages, and API handlers.
 - `api/projects/[id]/marketing-script/`: shortform preview marketing-script generation
 - `api/projects/[id]/generate-block-text/`: 블록 타입별 AI 문구 생성 (text-block, selling-point, review, faq, banner-strip, image-text, spec-table, cta, usage-steps, notice, price-promo, trust-badge, comparison, image-grid)
 - `api/workspace/assets/`: 워크스페이스 전체 에셋 조회 (프로젝트별 그룹)
+- `api/settings/profile`: GET/PATCH 프로필, POST avatar 업로드
+- `api/settings/workspace`: PATCH 워크스페이스 이름 변경
+- `api/settings/password`: POST 비밀번호 변경
 - Async API pattern stays `POST -> 202 + jobId`, `GET -> poll`
 
 ## Convention

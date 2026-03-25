@@ -282,6 +282,40 @@ export function uploadAsset(
   );
 }
 
+// --- Settings ---
+
+export interface ProfileData {
+  displayName: string | null;
+  avatarUrl: string | null;
+  email: string;
+  authProvider: string;
+}
+
+export function getProfile() {
+  return get<{ profile: ProfileData }>("/api/settings/profile");
+}
+
+export function updateProfile(data: { displayName?: string }) {
+  return patch<{ profile: ProfileData }>("/api/settings/profile", data);
+}
+
+export function uploadAvatar(file: File) {
+  const form = new FormData();
+  form.append("file", file);
+  return request<{ avatarUrl: string }>("/api/settings/profile/avatar", {
+    method: "POST",
+    body: form,
+  });
+}
+
+export function updateWorkspaceName(data: { name: string }) {
+  return patch<{ workspace: { id: string; name: string } }>("/api/settings/workspace", data);
+}
+
+export function changePassword(data: { currentPassword: string; newPassword: string }) {
+  return post<{ ok: boolean }>("/api/settings/password", data);
+}
+
 // --- Workspace assets ---
 
 export interface WorkspaceAssetGroup {
