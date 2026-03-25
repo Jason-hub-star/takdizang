@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Bell, Search, User } from "lucide-react";
+import { Bell, Plus, Search, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { RecentProjectListItem, SavedTemplateListItem } from "@/features/workspace-hub/project-filters";
 import type { WorkspaceActivityItem } from "@/features/workspace-hub/home-feed";
@@ -11,6 +11,7 @@ import { WORKSPACE_CONTROL } from "@/lib/workspace-surface";
 import { DirectUploadLauncher } from "./direct-upload-launcher";
 import { GlobalStartLauncher } from "./global-start-launcher";
 import { GlobalSearchOverlay } from "./global-search-overlay";
+import { MobileNavSheet } from "./mobile-nav-sheet";
 import { NotificationPanel } from "./notification-panel";
 
 interface AppHeaderProps {
@@ -56,6 +57,7 @@ export function AppHeader({
       <header className="sticky top-0 z-30 shrink-0 border-b border-[rgb(212_196_181_/_0.55)] bg-[rgb(247_241_234_/_0.72)] px-5 py-4 backdrop-blur-2xl lg:px-8">
         <div className="mx-auto flex w-full max-w-[1480px] items-center justify-between gap-6">
           <div className="flex min-w-0 flex-1 items-center gap-4">
+            <MobileNavSheet />
             <div className="hidden min-w-0 lg:block">
               <p className="takdi-kicker">Takdi Workspace</p>
               <p className="mt-1 truncate text-sm text-[var(--takdi-text-muted)]">
@@ -97,9 +99,10 @@ export function AppHeader({
             <Button
               type="button"
               onClick={() => setStartOpen(true)}
-              className="h-11 rounded-[1.15rem] bg-[var(--takdi-accent)] px-5 text-sm font-semibold tracking-[-0.01em] text-white shadow-[0_18px_34px_rgba(217,124,103,0.25)] hover:bg-[var(--takdi-accent-strong)]"
+              className="h-11 rounded-[1.15rem] bg-[var(--takdi-accent)] px-3 text-sm font-semibold tracking-[-0.01em] text-white shadow-[0_18px_34px_rgba(217,124,103,0.25)] hover:bg-[var(--takdi-accent-strong)] sm:px-5"
             >
-              새 작업 시작
+              <Plus className="h-5 w-5 sm:hidden" />
+              <span className="hidden sm:inline">새 작업 시작</span>
             </Button>
           </div>
         </div>

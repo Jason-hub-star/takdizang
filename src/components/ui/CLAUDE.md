@@ -9,6 +9,7 @@ shadcn/ui 기반 공통 UI 프리미티브.
 - `scroll-area.tsx` — shadcn ScrollArea
 - `separator.tsx` — shadcn Separator
 - `sonner.tsx` — shadcn Sonner 토스트 알림 (sonner 래퍼)
+- `sheet.tsx` — shadcn Sheet 모바일 드로어 (radix-ui Dialog 기반, side: left/right/top/bottom)
 - `status-badge.tsx` — 커스텀 프로젝트 상태 배지 (초안/생성 중/생성 완료/내보내기 완료/실패)
 
 ## Convention

@@ -8,6 +8,7 @@ Shared chrome and global overlays.
 - `global-debug-nav.tsx`: local debug page switcher
 - `global-start-launcher.tsx`: global start modal
 - `direct-upload-launcher.tsx`: shared staged upload hub
+- `mobile-nav-sheet.tsx`: 모바일 전용 네비게이션 Sheet (md 미만 햄버거 메뉴)
 
 ## Convention
 - All non-editor pages should use `AppLayout`.

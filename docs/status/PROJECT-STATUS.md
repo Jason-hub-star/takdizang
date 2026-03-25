@@ -1,8 +1,13 @@
 # Takdizang Project Status
 
-Last Updated: 2026-03-25 (KST, UX 텍스트 리라이팅 + i18n)
+Last Updated: 2026-03-25 (KST, 모바일 반응형 개선 진행 중)
 
 ## Latest Update
+
+### 모바일 반응형 개선 Phase 1 (2026-03-25)
+- **shadcn Sheet 컴포넌트 추가**: 모바일 드로어 기반 UI 패턴
+- **모바일 네비게이션**: MobileNavSheet (md 미만 햄버거 메뉴 → 좌측 Sheet 드로어)
+- **AppHeader 반응형**: CTA 버튼 모바일 아이콘 전용, MobileNavSheet 통합
 
 ### 설정 페이지 프로덕션 업그레이드 (2026-03-25)
 - **개발자 정보 제거**: 시스템 정보(Next.js/Supabase 버전), 저장소 정보(DB URL, 업로드 경로) 완전 제거
