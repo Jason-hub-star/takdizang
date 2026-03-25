@@ -1,7 +1,7 @@
 /** Phase 2: Usage limit enforcement per workspace. */
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
-const FREE_LIMITS: Record<string, number> = {
+export const FREE_LIMITS: Record<string, number> = {
   generation_start: 10,
   image_generation_start: 5,
   export_start: 5,

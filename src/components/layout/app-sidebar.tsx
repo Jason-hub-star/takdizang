@@ -102,7 +102,7 @@ export function AppSidebar() {
                         ? "새 작업과 최근 흐름"
                         : item.href === "/projects"
                           ? "프로젝트와 템플릿 관리"
-                          : "런타임과 저장소 확인"}
+                          : "계정과 워크스페이스 관리"}
                     </span>
                   </span>
                 </Link>

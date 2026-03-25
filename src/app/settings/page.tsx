@@ -1,33 +1,23 @@
-/** Read-only workspace operations summary for the current local setup. */
+/** 설정 페이지 — 계정, 사용량, 워크스페이스, AI 프로바이더 관리 */
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AppLayout } from "@/components/layout/app-layout";
-import { SummaryCard } from "@/components/shared/summary-card";
 import { AuthError } from "@/lib/workspace-guard";
-import { getSettingsSummary } from "@/features/workspace-hub/home-feed";
-import { formatCurrentScope } from "@/i18n/format";
+import { getSettingsPageData } from "@/features/workspace-hub/home-feed";
 import { getMessages } from "@/i18n/get-messages";
+import { SettingsShell } from "@/components/settings/settings-shell";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "설정 | Takdi Studio",
-  description: "워크스페이스 운영 상태를 확인해요.",
+  description: "계정과 워크스페이스를 관리해요.",
 };
 
-function formatDateTime(date: string | Date) {
-  return new Intl.DateTimeFormat("ko-KR", {
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(date));
-}
-
 export default async function SettingsPage() {
-  let summary;
+  let data;
   try {
-    summary = await getSettingsSummary();
+    data = await getSettingsPageData();
   } catch (err) {
     if (err instanceof AuthError) redirect("/login");
     throw err;
@@ -37,93 +27,11 @@ export default async function SettingsPage() {
   return (
     <AppLayout>
       <section className="takdi-page-intro px-6 py-7 lg:px-8">
-        <p className="takdi-kicker">Runtime and storage</p>
         <h1 className="takdi-display mt-4 max-w-[9ch]">{messages.settingsPage.title}</h1>
         <p className="takdi-lead mt-5">{messages.settingsPage.description}</p>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <SummaryCard
-          title={messages.settingsPage.workspace}
-          value={summary.workspaceName}
-          description={formatCurrentScope(messages, summary.workspaceId)}
-        />
-        <SummaryCard
-          title={messages.settingsPage.projects}
-          value={String(summary.projectCount)}
-          description={messages.settingsPage.projectCountDescription}
-        />
-        <SummaryCard
-          title={messages.settingsPage.savedTemplates}
-          value={String(summary.templateCount)}
-          description={messages.settingsPage.templateCountDescription}
-        />
-        <SummaryCard
-          title={messages.settingsPage.assets}
-          value={String(summary.assetCount)}
-          description={messages.settingsPage.assetCountDescription}
-        />
-      </section>
-
-      <section className="space-y-4">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="takdi-kicker">Overview</p>
-            <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-[var(--takdi-text)]">운영 현황</h2>
-            <p className="mt-2 text-sm text-[var(--takdi-text-muted)]">이번 달 사용량과 비용을 확인할 수 있어요.</p>
-          </div>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-3">
-          <SummaryCard
-            title="월간 작업량"
-            value={String(summary.monthlyEventCount)}
-            description="이번 달 실행한 작업 수예요."
-          />
-          <SummaryCard
-            title="내보내기 수"
-            value={String(summary.exportCount)}
-            description="완성해서 내보낸 결과물 수예요."
-          />
-          <SummaryCard
-            title="추정 비용"
-            value={`$${summary.totalEstimatedCost.toFixed(2)}`}
-            description="이번 달 누적 비용 추정치예요."
-          />
-        </div>
-      </section>
-
-      <section className="takdi-panel-strong rounded-[1.9rem] p-6">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="takdi-kicker">Recent activity</p>
-            <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-[var(--takdi-text)]">최근 실행 이력</h2>
-            <p className="mt-2 text-sm text-[var(--takdi-text-muted)]">최근 8건의 작업 내역을 보여줘요.</p>
-          </div>
-        </div>
-
-        {summary.recentActivity.length > 0 ? (
-          <div className="mt-6 space-y-3">
-            {summary.recentActivity.map((item) => (
-              <div
-                key={item.id}
-                className="takdi-activity-item"
-              >
-                <div>
-                  <p className="text-sm font-semibold text-[var(--takdi-text)]">{item.label}</p>
-                  <p className="mt-1 text-sm text-[var(--takdi-text-muted)]">{item.detail}</p>
-                </div>
-                <div className="text-sm text-[var(--takdi-text-subtle)] md:text-right">
-                  <p>{formatDateTime(item.createdAt)}</p>
-                  <p className="mt-1">{item.costEstimate != null ? `$${item.costEstimate.toFixed(2)}` : "비용 정보 없음"}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="mt-6 text-sm text-[var(--takdi-text-muted)]">아직 실행 이력이 없어요. 작업을 시작하면 여기에 표시돼요.</p>
-        )}
-      </section>
+      <SettingsShell data={data} />
     </AppLayout>
   );
 }
