@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { Edge, Node } from "@xyflow/react";
-import { AlertTriangle, Home, LayoutPanelTop, Plus, RefreshCcw, SlidersHorizontal } from "lucide-react";
+import { AlertTriangle, Home, LayoutPanelTop, Monitor, Plus, RefreshCcw, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { useT } from "@/i18n/use-t";
 import { FloatingToolbar } from "./floating-toolbar";
@@ -615,7 +615,13 @@ export function NodeEditorShell({
         <NodePalette mode={mode} disabled={guidedReadOnlyStructure} />
       </div>
 
-      <div className="relative flex-1">
+      <div className="relative flex flex-1 flex-col">
+        {/* 모바일 데스크탑 유도 배너 */}
+        <div className="flex items-center gap-2 border-b border-[rgb(212_196_181_/_0.55)] bg-[rgb(255_249_242)] px-4 py-2 text-xs text-[var(--takdi-text-muted)] md:hidden">
+          <Monitor className="h-4 w-4 shrink-0" />
+          <span>노드 편집은 데스크탑에서 더 편리해요</span>
+        </div>
+        <div className="relative flex-1">
         <div className="absolute left-4 top-6 z-20">
           <div className="flex flex-col items-start gap-2">
             {editingName ? (
@@ -714,6 +720,7 @@ export function NodeEditorShell({
             onRepair={handleRecoverGraph}
           />
         ) : null}
+      </div>
       </div>
 
       {/* Desktop properties */}

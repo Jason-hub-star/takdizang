@@ -126,71 +126,74 @@ export function ComposeToolbar({
       </div>
 
       <div className="flex items-center gap-1">
-        {onAiGenerate && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onAiGenerate}
-            className={`flex items-center gap-1 rounded-2xl text-xs ${WORKSPACE_TEXT.accent} hover:text-[var(--takdi-accent-strong)]`}
-          >
-            <LayoutTemplate className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">{messages.common.actions.templates}</span>
-          </Button>
-        )}
-        {aiToolsEnabled && (onAiVideoRender || onAiThumbnail || onAiScript) && (
-          <AiToolsDropdown
-            onVideoRender={onAiVideoRender}
-            onThumbnail={onAiThumbnail}
-            onScript={onAiScript}
-          />
-        )}
-        {onDesignCheck && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onDesignCheck}
-            className={`flex items-center gap-1 rounded-2xl text-xs ${WORKSPACE_CONTROL.ghostButton}`}
-          >
-            <ShieldCheck className="h-3.5 w-3.5" />
-            {messages.common.actions.check}
-          </Button>
-        )}
-        {onAutoFixAll && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onAutoFixAll}
-            className="flex items-center gap-1 rounded-2xl text-xs text-[#B8794E] hover:bg-[#F8F0E6] hover:text-[#9D6640]"
-          >
-            <Wrench className="h-3.5 w-3.5" />
-            {messages.common.actions.autoFix}
-          </Button>
-        )}
-        {onMobilePreviewToggle && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onMobilePreviewToggle}
-            className={`flex items-center gap-1 rounded-2xl text-xs ${
-              mobilePreview
-                ? `${WORKSPACE_CONTROL.accentTint}`
-                : WORKSPACE_CONTROL.ghostButton
-            }`}
-          >
-            {mobilePreview ? (
-              <>
-                <Monitor className="h-3.5 w-3.5" />
-                {messages.common.actions.desktop}
-              </>
-            ) : (
-              <>
-                <Smartphone className="h-3.5 w-3.5" />
-                {messages.common.actions.mobile}
-              </>
-            )}
-          </Button>
-        )}
-        {lastSaved && <span className={`mr-2 text-[10px] ${WORKSPACE_TEXT.muted}`}>{formatSavedAt(messages, lastSaved)}</span>}
+        {/* 데스크탑 전용 도구 버튼 */}
+        <div className="hidden items-center gap-1 md:flex">
+          {onAiGenerate && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onAiGenerate}
+              className={`flex items-center gap-1 rounded-2xl text-xs ${WORKSPACE_TEXT.accent} hover:text-[var(--takdi-accent-strong)]`}
+            >
+              <LayoutTemplate className="h-3.5 w-3.5" />
+              {messages.common.actions.templates}
+            </Button>
+          )}
+          {aiToolsEnabled && (onAiVideoRender || onAiThumbnail || onAiScript) && (
+            <AiToolsDropdown
+              onVideoRender={onAiVideoRender}
+              onThumbnail={onAiThumbnail}
+              onScript={onAiScript}
+            />
+          )}
+          {onDesignCheck && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onDesignCheck}
+              className={`flex items-center gap-1 rounded-2xl text-xs ${WORKSPACE_CONTROL.ghostButton}`}
+            >
+              <ShieldCheck className="h-3.5 w-3.5" />
+              {messages.common.actions.check}
+            </Button>
+          )}
+          {onAutoFixAll && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onAutoFixAll}
+              className="flex items-center gap-1 rounded-2xl text-xs text-[#B8794E] hover:bg-[#F8F0E6] hover:text-[#9D6640]"
+            >
+              <Wrench className="h-3.5 w-3.5" />
+              {messages.common.actions.autoFix}
+            </Button>
+          )}
+          {onMobilePreviewToggle && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onMobilePreviewToggle}
+              className={`flex items-center gap-1 rounded-2xl text-xs ${
+                mobilePreview
+                  ? `${WORKSPACE_CONTROL.accentTint}`
+                  : WORKSPACE_CONTROL.ghostButton
+              }`}
+            >
+              {mobilePreview ? (
+                <>
+                  <Monitor className="h-3.5 w-3.5" />
+                  {messages.common.actions.desktop}
+                </>
+              ) : (
+                <>
+                  <Smartphone className="h-3.5 w-3.5" />
+                  {messages.common.actions.mobile}
+                </>
+              )}
+            </Button>
+          )}
+          {lastSaved && <span className={`mr-2 text-[10px] ${WORKSPACE_TEXT.muted}`}>{formatSavedAt(messages, lastSaved)}</span>}
+        </div>
         <Button
           variant="ghost"
           size="sm"

@@ -42,7 +42,7 @@ import { DraftGeneratorDialog } from "./draft-generator-dialog";
 import { BlockContextMenu, type ContextMenuPosition } from "./block-context-menu";
 import { generateBlockText } from "@/lib/api-client";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
-import { Plus, SlidersHorizontal } from "lucide-react";
+import { Monitor, Plus, SlidersHorizontal } from "lucide-react";
 import { WORKSPACE_SURFACE, WORKSPACE_TEXT } from "@/lib/workspace-surface";
 
 const UNDO_COALESCE_MS = 400;
@@ -708,6 +708,12 @@ export function ComposeShell({ projectId, projectName, initialDoc, projectStatus
             theme={theme}
             onThemeChange={setTheme}
           />
+
+          {/* 모바일 데스크탑 유도 배너 */}
+          <div className="flex items-center gap-2 border-b border-[rgb(212_196_181_/_0.55)] bg-[rgb(255_249_242)] px-4 py-2 text-xs text-[var(--takdi-text-muted)] md:hidden">
+            <Monitor className="h-4 w-4 shrink-0" />
+            <span>블록 편집은 데스크탑에서 더 편리해요</span>
+          </div>
 
           <div className="flex flex-1 overflow-hidden">
             {/* Desktop palette */}
