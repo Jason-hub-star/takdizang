@@ -26,6 +26,12 @@ export const metadata: Metadata = {
   description: "AI 기반 이커머스 상세페이지 영상 생성 도구",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: {

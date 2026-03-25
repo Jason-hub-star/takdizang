@@ -102,14 +102,14 @@ export function ComposeToolbar({
         </div>
         <Link
           href={`/projects/${projectId}/editor`}
-          className={`flex items-center gap-1 text-xs ${WORKSPACE_TEXT.muted} hover:text-[var(--takdi-accent)]`}
+          className={`hidden items-center gap-1 text-xs sm:flex ${WORKSPACE_TEXT.muted} hover:text-[var(--takdi-accent)]`}
         >
           <ExternalLink className="h-3 w-3" />
           작업 자동화
         </Link>
       </div>
 
-      <div className="relative flex items-center gap-3">
+      <div className="relative hidden items-center gap-3 md:flex">
         <ThemePicker currentTheme={theme} onThemeChange={onThemeChange} />
         <label className={`text-xs ${WORKSPACE_TEXT.body}`}>{messages.composeShared.platform}</label>
         <select
@@ -134,7 +134,7 @@ export function ComposeToolbar({
             className={`flex items-center gap-1 rounded-2xl text-xs ${WORKSPACE_TEXT.accent} hover:text-[var(--takdi-accent-strong)]`}
           >
             <LayoutTemplate className="h-3.5 w-3.5" />
-            {messages.common.actions.templates}
+            <span className="hidden sm:inline">{messages.common.actions.templates}</span>
           </Button>
         )}
         {aiToolsEnabled && (onAiVideoRender || onAiThumbnail || onAiScript) && (
@@ -199,7 +199,7 @@ export function ComposeToolbar({
           className="flex items-center gap-1 rounded-2xl text-xs text-[#8E6C4C] hover:bg-[#F7EFE5] hover:text-[#6F5136]"
         >
           {isTemplateSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Bookmark className="h-3.5 w-3.5" />}
-          {messages.composeShared.favorite}
+          <span className="hidden sm:inline">{messages.composeShared.favorite}</span>
         </Button>
         <Button
           variant="ghost"
@@ -209,7 +209,7 @@ export function ComposeToolbar({
           className={`flex items-center gap-1 rounded-2xl text-xs ${WORKSPACE_CONTROL.ghostButton}`}
         >
           {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-          {messages.common.actions.save}
+          <span className="hidden sm:inline">{messages.common.actions.save}</span>
         </Button>
         <Button
           variant="ghost"
@@ -218,7 +218,7 @@ export function ComposeToolbar({
           className={`flex items-center gap-1 rounded-2xl text-xs ${WORKSPACE_CONTROL.ghostButton}`}
         >
           <Eye className="h-3.5 w-3.5" />
-          {messages.common.actions.preview}
+          <span className="hidden sm:inline">{messages.common.actions.preview}</span>
         </Button>
         <Button
           variant="ghost"
@@ -227,7 +227,7 @@ export function ComposeToolbar({
           className={`flex items-center gap-1 rounded-2xl text-xs ${WORKSPACE_CONTROL.ghostButton}`}
         >
           <Download className="h-3.5 w-3.5" />
-          {messages.common.actions.export}
+          <span className="hidden sm:inline">{messages.common.actions.export}</span>
         </Button>
       </div>
     </div>

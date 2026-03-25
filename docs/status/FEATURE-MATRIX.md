@@ -75,6 +75,7 @@ Status enum: `Not Started | In Progress | Done | Blocked | Deferred`
 | SETTINGS-004 | AI 프로바이더 연결 상태 | Done | claude | Kie.ai/Gemini/Remotion 상태 카드 (env vars 기반) |
 | SHARED-001 | 공유 컴포넌트 표준화 | Done | claude | SummaryCard, InlineEdit, UsageProgressBar, .takdi-activity-item |
 | MOBILE-001 | 모바일 네비게이션 (Sheet + 햄버거 메뉴) | Done | claude | shadcn Sheet + MobileNavSheet, md 미만 햄버거 메뉴 |
+| MOBILE-002 | 일반 페이지 반응형 폴리싱 | Done | claude | viewport export, overflow-x clip, min-w 수정, 툴바 모바일 축소 |
 | DEPLOY-001 | Vercel 배포 | Done | jason | https://takdizang.vercel.app (USE_MOCK=true) |
 | DEPLOY-002 | Supabase Auth URL 설정 | Not Started | jason | Site URL + Redirect URLs 설정 필요 |
 | DEPLOY-003 | Supabase migration 적용 | Not Started | jason | 5개 SQL 파일 순서대로 실행 |
