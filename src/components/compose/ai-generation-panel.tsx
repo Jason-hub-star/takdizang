@@ -127,7 +127,7 @@ export function AiGenerateTab({ projectId }: AiGenerateTabProps) {
             type="button"
             onClick={() => setActiveTab("text")}
             className={`flex-1 rounded-md px-3 py-1.5 text-[11px] font-medium transition-colors ${
-              activeTab === "text" ? `${WORKSPACE_CONTROL.accentButton}` : `${WORKSPACE_TEXT.muted} hover:text-[#4D433D]`
+              activeTab === "text" ? `${WORKSPACE_CONTROL.accentButton}` : `${WORKSPACE_TEXT.muted} hover:text-[var(--takdi-text)]`
             }`}
           >
             텍스트
@@ -136,7 +136,7 @@ export function AiGenerateTab({ projectId }: AiGenerateTabProps) {
             type="button"
             onClick={() => setActiveTab("image")}
             className={`flex-1 rounded-md px-3 py-1.5 text-[11px] font-medium transition-colors ${
-              activeTab === "image" ? `${WORKSPACE_CONTROL.accentButton}` : `${WORKSPACE_TEXT.muted} hover:text-[#4D433D]`
+              activeTab === "image" ? `${WORKSPACE_CONTROL.accentButton}` : `${WORKSPACE_TEXT.muted} hover:text-[var(--takdi-text)]`
             }`}
           >
             이미지
@@ -218,7 +218,7 @@ export function AiGenerateTab({ projectId }: AiGenerateTabProps) {
               <button
                 type="button"
                 onClick={() => setResults([])}
-                className={`text-[10px] ${WORKSPACE_TEXT.muted} hover:text-[#4D433D]`}
+                className={`text-[10px] ${WORKSPACE_TEXT.muted} hover:text-[var(--takdi-text)]`}
               >
                 모두 지우기
               </button>

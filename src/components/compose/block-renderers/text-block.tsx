@@ -28,11 +28,7 @@ export function TextBlockRenderer({ block, selected, onSelect, onUpdate, readOnl
 
   return (
     <div
-      className={`w-full rounded-[28px] border p-6 transition-colors ${
-        selected
-          ? "border-[rgb(236_197_183_/_0.95)] bg-[rgb(255_249_245_/_0.96)] shadow-[0_16px_36px_rgba(217,124,103,0.12)]"
-          : `${WORKSPACE_SURFACE.panel} hover:border-[rgb(215_201_188_/_0.94)]`
-      }`}
+      className={`w-full p-6 ${selected ? "takdi-block takdi-block-selected takdi-block-selected-fill" : "takdi-block takdi-block-default"}`}
       onClick={onSelect}
       style={{ textAlign: block.align, fontFamily: fontStyle }}
     >

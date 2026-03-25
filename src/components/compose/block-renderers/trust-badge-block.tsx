@@ -51,11 +51,7 @@ export function TrustBadgeBlockRenderer({ block, selected, onSelect, onUpdate, r
 
   return (
     <div
-      className={`w-full rounded-[28px] border p-6 transition-colors ${
-        selected
-          ? "border-[rgb(236_197_183_/_0.95)] bg-[rgb(255_249_245_/_0.96)] shadow-[0_16px_36px_rgba(217,124,103,0.12)]"
-          : `${WORKSPACE_SURFACE.panel} hover:border-[rgb(215_201_188_/_0.94)]`
-      }`}
+      className={`w-full p-6 ${selected ? "takdi-block takdi-block-selected takdi-block-selected-fill" : "takdi-block takdi-block-default"}`}
       onClick={onSelect}
     >
       <EditableText
@@ -102,7 +98,7 @@ export function TrustBadgeBlockRenderer({ block, selected, onSelect, onUpdate, r
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); deleteBadge(idx); }}
-                className="absolute -right-1 -top-1 z-10 flex h-5 w-5 items-center justify-center rounded-full border border-[rgb(236_201_201_/_0.95)] bg-[rgb(248_230_230_/_0.95)] text-[#B45A52] opacity-0 transition-opacity group-hover/badge:opacity-100"
+                className="absolute -right-1 -top-1 z-10 flex h-5 w-5 items-center justify-center rounded-full border border-[var(--takdi-delete-border)] bg-[var(--takdi-delete-bg)] text-[var(--takdi-delete-text)] opacity-0 transition-opacity group-hover/badge:opacity-100"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -115,7 +111,7 @@ export function TrustBadgeBlockRenderer({ block, selected, onSelect, onUpdate, r
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); addBadge(); }}
-          className="mx-auto mt-4 flex items-center gap-1 rounded-full border border-dashed border-[rgb(214_199_184_/_0.82)] bg-[rgb(255_255_255_/_0.72)] px-3 py-1.5 text-xs text-[var(--takdi-text-subtle)] transition-colors hover:border-[rgb(236_197_183_/_0.95)] hover:text-[var(--takdi-accent-strong)]"
+          className="mx-auto mt-4 flex items-center gap-1 rounded-full takdi-add-button px-3 py-1.5 text-xs"
         >
           <Plus className="h-3 w-3" /> 뱃지 추가
         </button>

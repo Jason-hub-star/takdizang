@@ -26,14 +26,14 @@ export function LeaveComposeDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#201A17]/35 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgb(32_26_23_/_0.35)] backdrop-blur-sm" onClick={onClose}>
       <div
         className={`w-full max-w-md rounded-[28px] p-6 ${WORKSPACE_SURFACE.panelStrong}`}
         onClick={(event) => event.stopPropagation()}
       >
         <div className="mb-5 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="rounded-full bg-[#F8F4EF] p-2 text-[#6F655D]">
+            <div className="rounded-full bg-[var(--takdi-surface-soft)] p-2 text-[#6F655D]">
               <Home className="h-4 w-4" />
             </div>
             <div>
@@ -41,12 +41,12 @@ export function LeaveComposeDialog({
               <p className={`text-xs ${WORKSPACE_TEXT.body}`}>{messages.composeShared.leaveComposeDescription}</p>
             </div>
           </div>
-          <button type="button" onClick={onClose} className={`${WORKSPACE_TEXT.muted} hover:text-[#4D433D]`}>
+          <button type="button" onClick={onClose} className={`${WORKSPACE_TEXT.muted} hover:text-[var(--takdi-text)]`}>
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="rounded-[24px] bg-[#F8F4EF] p-4 text-sm text-[#6F655D]">{messages.composeShared.leaveComposeBody}</div>
+        <div className="rounded-[24px] bg-[var(--takdi-surface-soft)] p-4 text-sm text-[#6F655D]">{messages.composeShared.leaveComposeBody}</div>
 
         <div className="mt-6 flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onClose} disabled={saving} className={`rounded-2xl ${WORKSPACE_CONTROL.ghostButton}`}>{messages.common.actions.cancel}</Button>

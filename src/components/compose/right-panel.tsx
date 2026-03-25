@@ -29,7 +29,7 @@ export function RightPanel({ block, onUpdate, projectId }: RightPanelProps) {
           className={`flex flex-1 items-center justify-center gap-1.5 px-3 py-3 text-xs font-medium transition-colors ${
             activeTab === "properties"
               ? `${WORKSPACE_TEXT.title} border-b-2 border-[var(--takdi-accent)]`
-              : `${WORKSPACE_TEXT.muted} hover:text-[#4D433D]`
+              : `${WORKSPACE_TEXT.muted} hover:text-[var(--takdi-text)]`
           }`}
         >
           <SlidersHorizontal className="h-3.5 w-3.5" />
@@ -41,7 +41,7 @@ export function RightPanel({ block, onUpdate, projectId }: RightPanelProps) {
           className={`flex flex-1 items-center justify-center gap-1.5 px-3 py-3 text-xs font-medium transition-colors ${
             activeTab === "ai-generate"
               ? `${WORKSPACE_TEXT.accent} border-b-2 border-[var(--takdi-accent)]`
-              : `${WORKSPACE_TEXT.muted} hover:text-[#4D433D]`
+              : `${WORKSPACE_TEXT.muted} hover:text-[var(--takdi-text)]`
           }`}
         >
           <Sparkles className="h-3.5 w-3.5" />

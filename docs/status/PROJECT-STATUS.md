@@ -1,8 +1,16 @@
 # Takdizang Project Status
 
-Last Updated: 2026-03-17 (KST, Vercel 첫 배포 — https://takdizang.vercel.app)
+Last Updated: 2026-03-25 (KST, 디자인 토큰 리팩토링)
 
 ## Latest Update
+
+### Design Token Refactoring (2026-03-25)
+- **CSS 변수 22개 추가**: `--takdi-radius-*` (4단계), block-state 색상 (5개), shadow scale (4개), accent-tint/soft/inset/delete 토큰
+- **블록 공통 클래스**: `.takdi-block`, `.takdi-block-selected`, `.takdi-block-selected-fill`, `.takdi-block-default`, `.takdi-add-button`
+- **17개 블록 렌더러 통일**: 반복되던 선택/호버/기본 상태 inline 스타일 → CSS 클래스 1줄로 치환
+- **40+ 파일 하드코딩 제거**: hex/rgb arbitrary Tailwind → `var(--takdi-*)` 참조
+- **시각 변경 0**: 모든 값은 기존 하드코딩과 동일, 참조 방식만 변경
+- **의도적 보류**: gradient hex (auth/cta), Remotion/React Flow 런타임, workspace-surface.ts 내부 rgb (68파일 의존)
 
 ### Compose AI UX v4 (2026-03-17)
 - **블록 사이 삽입 프리뷰**: "+" 클릭 → 팔레트 클릭 → 해당 위치에 ghost 프리뷰 표시 (기존: 항상 맨 끝)

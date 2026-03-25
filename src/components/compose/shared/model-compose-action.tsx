@@ -118,7 +118,7 @@ export function ModelComposeAction({ projectId, imageUrl, onImageChange }: Props
       <div className="flex items-center justify-between">
         <span className={`text-xs font-medium ${WORKSPACE_TEXT.accent}`}>모델컷 합성</span>
         {!running && (
-          <button type="button" onClick={() => setOpen(false)} className={`text-[10px] ${WORKSPACE_TEXT.muted} hover:text-[#4D433D]`}>
+          <button type="button" onClick={() => setOpen(false)} className={`text-[10px] ${WORKSPACE_TEXT.muted} hover:text-[var(--takdi-text)]`}>
             닫기
           </button>
         )}

@@ -55,7 +55,7 @@ export function DeleteConfirmDialog({
       >
         <div className="mb-5 flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <div className="rounded-full border border-[rgb(236_201_201_/_0.95)] bg-[rgb(248_230_230_/_0.95)] p-2 text-[#B45A52] shadow-[0_10px_22px_rgba(180,90,82,0.12)]">
+            <div className="rounded-full border border-[var(--takdi-delete-border)] bg-[var(--takdi-delete-bg)] p-2 text-[var(--takdi-delete-text)] shadow-[0_10px_22px_rgba(180,90,82,0.12)]">
               <AlertTriangle className="h-4 w-4" />
             </div>
             <div>

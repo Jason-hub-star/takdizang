@@ -1,9 +1,10 @@
 # Claude Handoff
 
-Last Updated: 2026-03-17 (KST, Vercel 첫 배포 완료 — https://takdizang.vercel.app)
+Last Updated: 2026-03-25 (KST, 디자인 토큰 리팩토링 완료)
 Branch: `main`
 
 ## Current Snapshot
+- **디자인 토큰 리팩토링 완료**: globals.css에 22개 CSS 변수 + 5개 블록 클래스 추가, 17개 블록 렌더러 + 40개 컴포넌트 하드코딩 제거
 - **Auth 시스템 구현 완료**: Supabase Auth (email + Google OAuth) + 미들웨어 세션 가드
 - **RLS 전면 적용**: 9개 테이블에 workspace 기반 격리 정책
 - **Schema 정비 완료**: TEXT→JSONB 변환, CHECK 제약, 복합 인덱스, updated_at 전파

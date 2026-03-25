@@ -123,7 +123,7 @@ function FontOption({
           Sample text ABC 123
         </div>
       </div>
-      {selected ? <div className="h-2 w-2 rounded-full bg-[#D97C67]" /> : null}
+      {selected ? <div className="h-2 w-2 rounded-full bg-[var(--takdi-accent)]" /> : null}
     </button>
   );
 }

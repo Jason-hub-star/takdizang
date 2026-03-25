@@ -152,7 +152,7 @@ export function ImageGenerateAction({ projectId, onImageChange, label }: Props) 
           <button
             type="button"
             onClick={() => { setOpen(false); setResultUrl(null); }}
-            className={`text-[10px] ${WORKSPACE_TEXT.muted} hover:text-[#4D433D]`}
+            className={`text-[10px] ${WORKSPACE_TEXT.muted} hover:text-[var(--takdi-text)]`}
           >
             <X className="h-3.5 w-3.5" />
           </button>

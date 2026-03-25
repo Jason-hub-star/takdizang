@@ -45,7 +45,7 @@ export function AiToolDialog({ open, toolType, projectId, onClose }: AiToolDialo
   if (!open || !toolType) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#201A17]/35 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgb(32_26_23_/_0.35)] backdrop-blur-sm" onClick={onClose}>
       <div
         className={`relative w-full max-w-md rounded-[28px] ${WORKSPACE_SURFACE.panelStrong} p-6`}
         onClick={(e) => e.stopPropagation()}
@@ -53,7 +53,7 @@ export function AiToolDialog({ open, toolType, projectId, onClose }: AiToolDialo
         <button
           type="button"
           onClick={onClose}
-          className={`absolute right-4 top-4 ${WORKSPACE_TEXT.muted} hover:text-[#4D433D]`}
+          className={`absolute right-4 top-4 ${WORKSPACE_TEXT.muted} hover:text-[var(--takdi-text)]`}
         >
           <X className="h-4 w-4" />
         </button>

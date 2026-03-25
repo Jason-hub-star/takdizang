@@ -16,6 +16,10 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  --radius-takdi-sm: var(--takdi-radius-sm);
+  --radius-takdi-md: var(--takdi-radius-md);
+  --radius-takdi-lg: var(--takdi-radius-lg);
+  --radius-takdi-xl: var(--takdi-radius-xl);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -93,6 +97,39 @@
   --takdi-text: #221c18;
   --takdi-text-muted: #685d56;
   --takdi-text-subtle: #8e8073;
+
+  /* Block radius scale */
+  --takdi-radius-sm: 20px;
+  --takdi-radius-md: 22px;
+  --takdi-radius-lg: 24px;
+  --takdi-radius-xl: 28px;
+
+  /* Block state colors */
+  --takdi-block-border: rgb(214 199 184 / 0.78);
+  --takdi-block-border-hover: rgb(215 201 188 / 0.94);
+  --takdi-block-border-selected: rgb(236 197 183 / 0.95);
+  --takdi-block-bg-selected: rgb(255 249 245 / 0.96);
+  --takdi-block-shadow-selected: 0 16px 36px rgba(217, 124, 103, 0.12);
+
+  /* Accent tint */
+  --takdi-accent-tint-border: rgb(236 197 183 / 0.95);
+  --takdi-accent-tint-bg: rgb(248 231 226 / 0.95);
+
+  /* Soft / inset surfaces */
+  --takdi-soft-bg: rgb(248 241 232 / 0.72);
+  --takdi-inset-border: rgb(214 199 184 / 0.82);
+  --takdi-inset-bg: rgb(255 255 255 / 0.72);
+
+  /* Delete button */
+  --takdi-delete-border: rgb(236 201 201 / 0.95);
+  --takdi-delete-bg: rgb(248 230 230 / 0.95);
+  --takdi-delete-text: #B45A52;
+
+  /* Shadow scale */
+  --takdi-shadow-accent-sm: 0 10px 22px rgba(217, 124, 103, 0.12);
+  --takdi-shadow-accent-md: 0 12px 24px rgba(217, 124, 103, 0.16);
+  --takdi-shadow-accent-lg: 0 18px 34px rgba(217, 124, 103, 0.24);
+  --takdi-shadow-accent-pill: 0 12px 24px rgba(217, 124, 103, 0.14);
 }
 
 .dark {
@@ -372,6 +409,48 @@ h6,
 
   .takdi-skeleton-line {
     border-radius: 9999px;
+  }
+
+  /* ── Block container ── */
+  .takdi-block {
+    border-radius: var(--takdi-radius-xl);
+    border-width: 1px;
+    transition-property: color, background-color, border-color, box-shadow;
+    transition-duration: 150ms;
+  }
+
+  .takdi-block-selected {
+    border-color: var(--takdi-block-border-selected);
+    box-shadow: var(--takdi-block-shadow-selected);
+  }
+
+  .takdi-block-selected-fill {
+    background: var(--takdi-block-bg-selected);
+  }
+
+  .takdi-block-default {
+    border-color: var(--takdi-line);
+    background: var(--takdi-surface);
+    box-shadow: 0 18px 42px rgb(80 54 34 / 0.06);
+    backdrop-filter: blur(16px);
+  }
+
+  .takdi-block-default:hover {
+    border-color: var(--takdi-block-border-hover);
+  }
+
+  /* ── Add-item button ── */
+  .takdi-add-button {
+    border: 1px dashed var(--takdi-inset-border);
+    background: var(--takdi-inset-bg);
+    color: var(--takdi-text-subtle);
+    transition-property: color, border-color;
+    transition-duration: 150ms;
+  }
+
+  .takdi-add-button:hover {
+    border-color: var(--takdi-block-border-selected);
+    color: var(--takdi-accent-strong);
   }
 }
 

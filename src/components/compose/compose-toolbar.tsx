@@ -102,7 +102,7 @@ export function ComposeToolbar({
         </div>
         <Link
           href={`/projects/${projectId}/editor`}
-          className={`flex items-center gap-1 text-xs ${WORKSPACE_TEXT.muted} hover:text-[#D97C67]`}
+          className={`flex items-center gap-1 text-xs ${WORKSPACE_TEXT.muted} hover:text-[var(--takdi-accent)]`}
         >
           <ExternalLink className="h-3 w-3" />
           작업 자동화
@@ -131,7 +131,7 @@ export function ComposeToolbar({
             variant="ghost"
             size="sm"
             onClick={onAiGenerate}
-            className={`flex items-center gap-1 rounded-2xl text-xs ${WORKSPACE_TEXT.accent} hover:text-[#CF705A]`}
+            className={`flex items-center gap-1 rounded-2xl text-xs ${WORKSPACE_TEXT.accent} hover:text-[var(--takdi-accent-strong)]`}
           >
             <LayoutTemplate className="h-3.5 w-3.5" />
             {messages.common.actions.templates}
@@ -261,7 +261,7 @@ function AiToolsDropdown({
         variant="ghost"
         size="sm"
         onClick={() => setOpen((prev) => !prev)}
-        className={`flex items-center gap-1 rounded-2xl text-xs ${WORKSPACE_TEXT.accent} hover:text-[#CF705A]`}
+        className={`flex items-center gap-1 rounded-2xl text-xs ${WORKSPACE_TEXT.accent} hover:text-[var(--takdi-accent-strong)]`}
       >
         <Sparkles className="h-3.5 w-3.5" />
         AI 도구

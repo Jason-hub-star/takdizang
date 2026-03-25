@@ -76,12 +76,12 @@ export function DraftGeneratorDialog({ open, onClose, projectId, onComplete }: D
     <div className="fixed inset-0 z-60 flex items-center justify-center" onClick={handleClose}>
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
       <div
-        className={`relative w-[520px] rounded-2xl border border-[rgb(214_199_184_/_0.55)] ${WORKSPACE_SURFACE.panelStrong} shadow-2xl`}
+        className={`relative w-[520px] rounded-2xl border border-[var(--takdi-inset-border)] ${WORKSPACE_SURFACE.panelStrong} shadow-2xl`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center gap-2 border-b border-[rgb(214_199_184_/_0.35)] px-6 py-4">
-          <Sparkles className="h-5 w-5 text-[#D97C67]" />
+        <div className="flex items-center gap-2 border-b border-[var(--takdi-inset-border)] px-6 py-4">
+          <Sparkles className="h-5 w-5 text-[var(--takdi-accent)]" />
           <h2 className={`text-base font-semibold ${WORKSPACE_TEXT.title}`}>한 번에 초안 만들기</h2>
         </div>
 
@@ -100,7 +100,7 @@ export function DraftGeneratorDialog({ open, onClose, projectId, onComplete }: D
                   onChange={(e) => setBriefText(e.target.value)}
                   placeholder="상품이나 브랜드를 설명해주세요..."
                   rows={4}
-                  className={`w-full rounded-xl border px-3 py-2.5 text-sm outline-none transition focus:ring-1 focus:ring-[#D97C67] ${WORKSPACE_CONTROL.input}`}
+                  className={`w-full rounded-xl border px-3 py-2.5 text-sm outline-none transition focus:ring-1 focus:ring-[var(--takdi-accent)] ${WORKSPACE_CONTROL.input}`}
                 />
               </div>
 
@@ -126,7 +126,7 @@ export function DraftGeneratorDialog({ open, onClose, projectId, onComplete }: D
               <Button
                 onClick={() => void handleGenerate()}
                 disabled={!briefText.trim()}
-                className="w-full rounded-xl bg-[#D97C67] text-white hover:bg-[#CF705A]"
+                className="w-full rounded-xl bg-[var(--takdi-accent)] text-white hover:bg-[var(--takdi-accent-strong)]"
               >
                 <Sparkles className="mr-2 h-4 w-4" />
                 초안 만들기
@@ -139,7 +139,7 @@ export function DraftGeneratorDialog({ open, onClose, projectId, onComplete }: D
             <div className="space-y-4 py-4">
               <div className="flex items-center gap-3">
                 {phase === "generating-text" ? (
-                  <Loader2 className="h-5 w-5 animate-spin text-[#D97C67]" />
+                  <Loader2 className="h-5 w-5 animate-spin text-[var(--takdi-accent)]" />
                 ) : (
                   <Check className="h-5 w-5 text-emerald-500" />
                 )}
@@ -149,7 +149,7 @@ export function DraftGeneratorDialog({ open, onClose, projectId, onComplete }: D
               </div>
               <div className="flex items-center gap-3">
                 {phase === "generating-images" ? (
-                  <Loader2 className="h-5 w-5 animate-spin text-[#D97C67]" />
+                  <Loader2 className="h-5 w-5 animate-spin text-[var(--takdi-accent)]" />
                 ) : (
                   <div className={`h-5 w-5 rounded-full border-2 ${WORKSPACE_TEXT.muted}`} />
                 )}
@@ -172,7 +172,7 @@ export function DraftGeneratorDialog({ open, onClose, projectId, onComplete }: D
               <p className={`text-sm font-medium ${WORKSPACE_TEXT.body}`}>
                 초안이 완성되었습니다! ({blockCount}개 블록)
               </p>
-              <Button onClick={handleClose} className="rounded-xl bg-[#D97C67] text-white hover:bg-[#CF705A]">
+              <Button onClick={handleClose} className="rounded-xl bg-[var(--takdi-accent)] text-white hover:bg-[var(--takdi-accent-strong)]">
                 확인
               </Button>
             </div>
@@ -188,7 +188,7 @@ export function DraftGeneratorDialog({ open, onClose, projectId, onComplete }: D
                 <Button variant="outline" onClick={handleClose} className="flex-1 rounded-xl">
                   닫기
                 </Button>
-                <Button onClick={handleRetry} className="flex-1 rounded-xl bg-[#D97C67] text-white hover:bg-[#CF705A]">
+                <Button onClick={handleRetry} className="flex-1 rounded-xl bg-[var(--takdi-accent)] text-white hover:bg-[var(--takdi-accent-strong)]">
                   다시 시도
                 </Button>
               </div>

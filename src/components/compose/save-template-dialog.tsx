@@ -35,14 +35,14 @@ export function SaveTemplateDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#201A17]/35 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgb(32_26_23_/_0.35)] backdrop-blur-sm" onClick={onClose}>
       <div
         className={`w-full max-w-md rounded-[28px] p-6 ${WORKSPACE_SURFACE.panelStrong}`}
         onClick={(event) => event.stopPropagation()}
       >
         <div className="mb-5 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="rounded-full bg-[#F8E7E2] p-2 text-[#D97C67]">
+            <div className="rounded-full bg-[var(--takdi-accent-tint-bg)] p-2 text-[var(--takdi-accent)]">
               <Bookmark className="h-4 w-4" />
             </div>
             <div>
@@ -50,7 +50,7 @@ export function SaveTemplateDialog({
               <p className={`text-xs ${WORKSPACE_TEXT.body}`}>{messages.composeShared.saveFavoriteTemplateDescription}</p>
             </div>
           </div>
-          <button type="button" onClick={onClose} className={`${WORKSPACE_TEXT.muted} hover:text-[#4D433D]`}>
+          <button type="button" onClick={onClose} className={`${WORKSPACE_TEXT.muted} hover:text-[var(--takdi-text)]`}>
             <X className="h-4 w-4" />
           </button>
         </div>

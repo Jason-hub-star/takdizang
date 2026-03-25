@@ -27,11 +27,7 @@ export function PricePromoBlockRenderer({ block, selected, onSelect, onUpdate, r
 
   return (
     <div
-      className={`w-full rounded-[28px] border p-6 transition-colors ${
-        selected
-          ? "border-[rgb(236_197_183_/_0.95)] bg-[rgb(255_249_245_/_0.96)] shadow-[0_16px_36px_rgba(217,124,103,0.12)]"
-          : `${WORKSPACE_SURFACE.panel} hover:border-[rgb(215_201_188_/_0.94)]`
-      }`}
+      className={`w-full p-6 ${selected ? "takdi-block takdi-block-selected takdi-block-selected-fill" : "takdi-block takdi-block-default"}`}
       onClick={onSelect}
     >
       {/* Badge */}
@@ -41,7 +37,7 @@ export function PricePromoBlockRenderer({ block, selected, onSelect, onUpdate, r
             value={block.badge ?? ""}
             placeholder="한정특가"
             onChange={(v) => onUpdate({ badge: v })}
-            className="inline-block rounded-full border border-[rgb(236_197_183_/_0.95)] bg-[rgb(217_124_103)] px-3 py-1 text-xs font-bold text-white shadow-[0_12px_24px_rgba(217,124,103,0.16)]"
+            className="inline-block rounded-full border border-[var(--takdi-accent-tint-border)] bg-[var(--takdi-accent)] px-3 py-1 text-xs font-bold text-white shadow-[var(--takdi-shadow-accent-md)]"
             tag="span"
             readOnly={readOnly}
           />

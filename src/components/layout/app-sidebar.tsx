@@ -55,7 +55,7 @@ export function AppSidebar() {
             className="takdi-panel-strong flex items-center gap-3 rounded-[1.6rem] px-3 py-3 lg:px-4"
             title={messages.layout.logoTitle}
           >
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[1.15rem] bg-[linear-gradient(135deg,#d97c67,#b96f46)] text-sm font-semibold text-white shadow-[0_18px_34px_rgba(217,124,103,0.26)]">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[1.15rem] bg-[linear-gradient(135deg,#d97c67,#b96f46)] text-sm font-semibold text-white shadow-[var(--takdi-shadow-accent-lg)]">
               T
             </span>
             <span className="hidden min-w-0 lg:block">

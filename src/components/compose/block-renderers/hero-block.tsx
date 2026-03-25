@@ -90,11 +90,7 @@ export function HeroBlockRenderer({ block, selected, onSelect, onUpdate, readOnl
   return (
     <div
       ref={containerRef}
-      className={`relative w-full cursor-pointer overflow-hidden rounded-[28px] border transition-colors ${
-        selected
-          ? "border-[rgb(236_197_183_/_0.95)] shadow-[0_16px_36px_rgba(217,124,103,0.12)]"
-          : `${WORKSPACE_SURFACE.panel} hover:border-[rgb(215_201_188_/_0.94)]`
-      }`}
+      className={`relative w-full cursor-pointer overflow-hidden ${selected ? "takdi-block takdi-block-selected" : "takdi-block takdi-block-default"}`}
       onClick={onSelect}
       style={{ minHeight: 300 }}
     >

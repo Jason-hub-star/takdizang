@@ -34,10 +34,10 @@ const STYLE_CONFIG = {
     btn: "border border-white/20 bg-[rgba(255,255,255,0.14)] text-white",
   },
   minimal: {
-    bg: "bg-[rgb(248_241_232_/_0.72)]",
+    bg: "bg-[var(--takdi-soft-bg)]",
     text: "text-[var(--takdi-text)]",
     sub: "text-[var(--takdi-text-muted)]",
-    btn: "border border-[rgb(214_199_184_/_0.82)] bg-[rgb(255_255_255_/_0.72)] text-[var(--takdi-text)]",
+    btn: "border border-[var(--takdi-inset-border)] bg-[var(--takdi-inset-bg)] text-[var(--takdi-text)]",
   },
 };
 
@@ -49,11 +49,7 @@ export function CtaBlockRenderer({ block, selected, onSelect, onUpdate, readOnly
 
   return (
     <div
-      className={`w-full overflow-hidden rounded-[28px] border transition-colors ${
-        selected
-          ? "border-[rgb(236_197_183_/_0.95)] shadow-[0_16px_36px_rgba(217,124,103,0.12)]"
-          : `${WORKSPACE_SURFACE.panel} hover:border-[rgb(215_201_188_/_0.94)]`
-      }`}
+      className={`w-full overflow-hidden ${selected ? "takdi-block takdi-block-selected" : "takdi-block takdi-block-default"}`}
       onClick={onSelect}
     >
       <div className={`py-8 text-center ${customBg ? "" : config.bg}`} style={customBg}>

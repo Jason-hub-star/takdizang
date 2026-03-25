@@ -17,7 +17,7 @@ interface Props {
 
 export function ImageTextBlockRenderer({ block, selected, onSelect, onUpdate, readOnly }: Props) {
   const imgSide = readOnly ? (
-    <div className={`flex aspect-square w-1/2 items-center justify-center overflow-hidden rounded-[24px] bg-[rgb(248_241_232_/_0.72)]`}>
+    <div className={`flex aspect-square w-1/2 items-center justify-center overflow-hidden rounded-[var(--takdi-radius-lg)] bg-[var(--takdi-soft-bg)]`}>
       {block.imageUrl ? (
         <img src={block.imageUrl} alt="" className="h-full w-full object-cover" style={buildFilterStyle(block.imageFilters) ? { filter: buildFilterStyle(block.imageFilters) } : undefined} />
       ) : (
@@ -30,7 +30,7 @@ export function ImageTextBlockRenderer({ block, selected, onSelect, onUpdate, re
     <div className="w-1/2">
       <AiDropField blockId={block.id} fieldName="imageUrl" acceptTypes={["image"]}
         onApply={(url) => onUpdate({ imageUrl: url })}>
-        <div className="overflow-hidden rounded-[24px]">
+        <div className="overflow-hidden rounded-[var(--takdi-radius-lg)]">
           <ImageUploadZone
             imageUrl={block.imageUrl}
             onImageChange={(url) => onUpdate({ imageUrl: url })}
@@ -74,11 +74,7 @@ export function ImageTextBlockRenderer({ block, selected, onSelect, onUpdate, re
 
   return (
     <div
-      className={`flex w-full gap-4 rounded-[28px] border p-4 transition-colors ${
-        selected
-          ? "border-[rgb(236_197_183_/_0.95)] bg-[rgb(255_249_245_/_0.96)] shadow-[0_16px_36px_rgba(217,124,103,0.12)]"
-          : `${WORKSPACE_SURFACE.panel} hover:border-[rgb(215_201_188_/_0.94)]`
-      }`}
+      className={`flex w-full gap-4 p-4 ${selected ? "takdi-block takdi-block-selected takdi-block-selected-fill" : "takdi-block takdi-block-default"}`}
       onClick={onSelect}
     >
       {block.imagePosition === "left" ? (

@@ -50,7 +50,7 @@ function IconSelector({ current, onSelect }: { current: string; onSelect: (icon:
       <button
         type="button"
         onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
-        className="flex h-12 w-12 items-center justify-center rounded-full border border-[rgb(236_197_183_/_0.95)] bg-[rgb(248_231_226_/_0.95)] text-[var(--takdi-accent-strong)] shadow-[0_10px_22px_rgba(217,124,103,0.12)] transition-colors hover:bg-[rgb(246_223_215_/_0.95)]"
+        className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--takdi-accent-tint-border)] bg-[var(--takdi-accent-tint-bg)] text-[var(--takdi-accent-strong)] shadow-[var(--takdi-shadow-accent-sm)] transition-colors hover:bg-[rgb(246_223_215_/_0.95)]"
       >
         {(() => {
           const entry = ICON_MAP[current];
@@ -69,7 +69,7 @@ function IconSelector({ current, onSelect }: { current: string; onSelect: (icon:
                 onClick={(e) => { e.stopPropagation(); onSelect(key); setOpen(false); }}
                 className={`flex h-10 w-full flex-col items-center justify-center gap-0.5 rounded-xl transition-colors ${
                   key === current
-                    ? "border border-[rgb(236_197_183_/_0.95)] bg-[rgb(248_231_226_/_0.95)] text-[var(--takdi-accent-strong)]"
+                    ? "border border-[var(--takdi-accent-tint-border)] bg-[var(--takdi-accent-tint-bg)] text-[var(--takdi-accent-strong)]"
                     : "text-[var(--takdi-text-muted)] hover:bg-[rgb(247_239_231_/_0.92)]"
                 }`}
                 title={label}
@@ -105,11 +105,7 @@ export function SellingPointBlockRenderer({ block, selected, onSelect, onUpdate,
 
   return (
     <div
-      className={`w-full rounded-[28px] border p-6 transition-colors ${
-        selected
-          ? "border-[rgb(236_197_183_/_0.95)] bg-[rgb(255_249_245_/_0.96)] shadow-[0_16px_36px_rgba(217,124,103,0.12)]"
-          : `${WORKSPACE_SURFACE.panel} hover:border-[rgb(215_201_188_/_0.94)]`
-      }`}
+      className={`w-full p-6 ${selected ? "takdi-block takdi-block-selected takdi-block-selected-fill" : "takdi-block takdi-block-default"}`}
       onClick={onSelect}
     >
       <div className={`${block.layout === "horizontal" ? "flex gap-4 overflow-x-auto" : `grid gap-6 ${block.items.length === 1 ? "grid-cols-1" : block.items.length === 2 ? "grid-cols-2" : block.items.length === 3 ? "grid-cols-3" : "grid-cols-4"}`}`}>
@@ -119,13 +115,13 @@ export function SellingPointBlockRenderer({ block, selected, onSelect, onUpdate,
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); deleteItem(idx); }}
-                className="absolute -right-1 -top-1 z-10 flex h-5 w-5 items-center justify-center rounded-full border border-[rgb(236_201_201_/_0.95)] bg-[rgb(248_230_230_/_0.95)] text-[#B45A52] opacity-0 transition-opacity group-hover/item:opacity-100"
+                className="absolute -right-1 -top-1 z-10 flex h-5 w-5 items-center justify-center rounded-full border border-[var(--takdi-delete-border)] bg-[var(--takdi-delete-bg)] text-[var(--takdi-delete-text)] opacity-0 transition-opacity group-hover/item:opacity-100"
               >
                 <X className="h-3 w-3" />
               </button>
             )}
             {readOnly ? (
-              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[rgb(236_197_183_/_0.95)] bg-[rgb(248_231_226_/_0.95)] text-[var(--takdi-accent-strong)]">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--takdi-accent-tint-border)] bg-[var(--takdi-accent-tint-bg)] text-[var(--takdi-accent-strong)]">
                 {(() => { const Icon = ICON_MAP[item.icon]?.icon ?? Star; return <Icon className="h-6 w-6" />; })()}
               </div>
             ) : (
@@ -155,7 +151,7 @@ export function SellingPointBlockRenderer({ block, selected, onSelect, onUpdate,
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); addItem(); }}
-          className="mx-auto mt-4 flex items-center gap-1 rounded-full border border-dashed border-[rgb(214_199_184_/_0.82)] bg-[rgb(255_255_255_/_0.72)] px-3 py-1.5 text-xs text-[var(--takdi-text-subtle)] transition-colors hover:border-[rgb(236_197_183_/_0.95)] hover:text-[var(--takdi-accent-strong)]"
+          className="mx-auto mt-4 flex items-center gap-1 rounded-full takdi-add-button px-3 py-1.5 text-xs"
         >
           <Plus className="h-3 w-3" /> 포인트 추가
         </button>

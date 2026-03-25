@@ -28,13 +28,14 @@ export const WORKSPACE_CONTROL = {
   subtleButton:
     "border border-[rgb(214_199_184_/_0.78)] bg-[rgb(255_255_255_/_0.84)] text-[var(--takdi-text)] hover:bg-[rgb(248_241_232_/_0.82)] hover:text-[var(--takdi-text)]",
   accentButton:
-    "bg-[var(--takdi-accent)] text-white shadow-[0_18px_34px_rgba(217,124,103,0.24)] hover:bg-[var(--takdi-accent-strong)]",
+    "bg-[var(--takdi-accent)] text-white shadow-[var(--takdi-shadow-accent-lg)] hover:bg-[var(--takdi-accent-strong)]",
   accentTint:
-    "border-[rgb(236_197_183_/_0.95)] bg-[rgb(248_231_226_/_0.95)] text-[var(--takdi-accent-strong)]",
+    "border-[var(--takdi-accent-tint-border)] bg-[var(--takdi-accent-tint-bg)] text-[var(--takdi-accent-strong)]",
   darkChip:
     "border-[rgb(84_64_50_/_0.18)] bg-[linear-gradient(135deg,#2b2420,#46362d)] text-white shadow-[0_18px_36px_rgba(40,26,18,0.22)]",
   pill:
     "border border-[rgb(214_199_184_/_0.82)] bg-[rgb(248_241_232_/_0.8)] text-[var(--takdi-text-muted)]",
   pillActive:
-    "border border-[rgb(236_197_183_/_0.95)] bg-[rgb(248_231_226_/_0.95)] text-[var(--takdi-accent-strong)] shadow-[0_12px_24px_rgba(217,124,103,0.14)]",
+    "border border-[var(--takdi-accent-tint-border)] bg-[var(--takdi-accent-tint-bg)] text-[var(--takdi-accent-strong)] shadow-[var(--takdi-shadow-accent-pill)]",
 } as const;
+

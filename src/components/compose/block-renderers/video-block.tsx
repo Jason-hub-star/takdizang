@@ -18,11 +18,7 @@ export function VideoBlockRenderer({ block, selected, onSelect, onUpdate, readOn
 
   return (
     <div
-      className={`w-full rounded-[28px] border p-6 transition-colors ${
-        selected
-          ? "border-[rgb(236_197_183_/_0.95)] bg-[rgb(255_249_245_/_0.96)] shadow-[0_16px_36px_rgba(217,124,103,0.12)]"
-          : `${WORKSPACE_SURFACE.panel} hover:border-[rgb(215_201_188_/_0.94)]`
-      }`}
+      className={`w-full p-6 ${selected ? "takdi-block takdi-block-selected takdi-block-selected-fill" : "takdi-block takdi-block-default"}`}
       onClick={onSelect}
     >
       {readOnly ? (
@@ -33,7 +29,7 @@ export function VideoBlockRenderer({ block, selected, onSelect, onUpdate, readOn
             <video src={block.videoUrl} poster={block.posterUrl} controls className="w-full rounded" />
           )
         ) : (
-          <div className={`flex h-48 items-center justify-center bg-[rgb(248_241_232_/_0.72)] ${WORKSPACE_TEXT.muted}`}>
+          <div className={`flex h-48 items-center justify-center bg-[var(--takdi-soft-bg)] ${WORKSPACE_TEXT.muted}`}>
             <p className="text-sm">영상을 추가하세요</p>
           </div>
         )
@@ -51,7 +47,7 @@ export function VideoBlockRenderer({ block, selected, onSelect, onUpdate, readOn
               <ImageUploadZone
                 imageUrl={block.posterUrl}
                 onImageChange={(url) => onUpdate({ posterUrl: url })}
-                className="h-24 rounded-[20px]"
+                className="h-24 rounded-[var(--takdi-radius-sm)]"
                 placeholderText="포스터 이미지 업로드"
               />
             </div>

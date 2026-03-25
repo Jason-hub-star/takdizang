@@ -16,11 +16,7 @@ interface Props {
 export function ComparisonBlockRenderer({ block, selected, onSelect, onUpdate, readOnly }: Props) {
   return (
     <div
-      className={`w-full rounded-[28px] border p-6 transition-colors ${
-        selected
-          ? "border-[rgb(236_197_183_/_0.95)] bg-[rgb(255_249_245_/_0.96)] shadow-[0_16px_36px_rgba(217,124,103,0.12)]"
-          : `${WORKSPACE_SURFACE.panel} hover:border-[rgb(215_201_188_/_0.94)]`
-      }`}
+      className={`w-full p-6 ${selected ? "takdi-block takdi-block-selected takdi-block-selected-fill" : "takdi-block takdi-block-default"}`}
       onClick={onSelect}
     >
       <EditableText
@@ -33,7 +29,7 @@ export function ComparisonBlockRenderer({ block, selected, onSelect, onUpdate, r
       />
       <div className="grid grid-cols-2 gap-4">
         <div className="text-center">
-          <div className={`mb-2 aspect-square overflow-hidden rounded-[24px] ${WORKSPACE_SURFACE.softInset}`}>
+          <div className={`mb-2 aspect-square overflow-hidden rounded-[var(--takdi-radius-lg)] ${WORKSPACE_SURFACE.softInset}`}>
             {readOnly ? (
               block.before.imageUrl ? (
                 <img src={block.before.imageUrl} alt="" className="h-full w-full object-cover" style={buildFilterStyle(block.imageFilters) ? { filter: buildFilterStyle(block.imageFilters) } : undefined} />
@@ -62,7 +58,7 @@ export function ComparisonBlockRenderer({ block, selected, onSelect, onUpdate, r
           />
         </div>
         <div className="text-center">
-          <div className={`mb-2 aspect-square overflow-hidden rounded-[24px] ${WORKSPACE_SURFACE.softInset}`}>
+          <div className={`mb-2 aspect-square overflow-hidden rounded-[var(--takdi-radius-lg)] ${WORKSPACE_SURFACE.softInset}`}>
             {readOnly ? (
               block.after.imageUrl ? (
                 <img src={block.after.imageUrl} alt="" className="h-full w-full object-cover" style={buildFilterStyle(block.imageFilters) ? { filter: buildFilterStyle(block.imageFilters) } : undefined} />

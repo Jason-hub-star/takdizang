@@ -245,7 +245,7 @@ export function buildQuickActions(handlers: {
   onTemplates: () => void;
 }): QuickAction[] {
   return [
-    { id: "bulk-draft", label: "한 번에 초안 만들기", description: "브리프로 전체 텍스트+이미지 생성", resultType: "혼합", credit: "15", icon: <Sparkles className="h-4 w-4 text-[#D97C67]" />, condition: "always", onExecute: handlers.onBulkDraft },
+    { id: "bulk-draft", label: "한 번에 초안 만들기", description: "브리프로 전체 텍스트+이미지 생성", resultType: "혼합", credit: "15", icon: <Sparkles className="h-4 w-4 text-[var(--takdi-accent)]" />, condition: "always", onExecute: handlers.onBulkDraft },
     { id: "block-text", label: "AI 문구 생성", description: "선택 블록에 AI 텍스트", resultType: "텍스트", credit: "3", icon: <Pencil className="h-4 w-4 text-blue-500" />, condition: "block-selected", onExecute: handlers.onBlockText },
     { id: "text-rewrite", label: "텍스트 다시 쓰기", description: "톤 변경/번역/축약", resultType: "텍스트", credit: "3", icon: <RefreshCw className="h-4 w-4 text-blue-500" />, condition: "text-block", onExecute: handlers.onTextRewrite },
     { id: "fill-empty", label: "빈 칸 채우기", description: "빈 텍스트 필드 일괄 생성", resultType: "텍스트", credit: "3×N", icon: <Sparkles className="h-4 w-4 text-amber-500" />, condition: "always", onExecute: handlers.onFillEmpty },

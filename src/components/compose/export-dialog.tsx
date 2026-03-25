@@ -116,14 +116,14 @@ export function ExportDialog({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#201A17]/35 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgb(32_26_23_/_0.35)] backdrop-blur-sm" onClick={onClose}>
       <div
         className={`w-96 rounded-[28px] p-6 ${WORKSPACE_SURFACE.panelStrong}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 className={`text-sm font-semibold ${WORKSPACE_TEXT.title}`}>내보내기</h2>
-          <button onClick={onClose} className={`${WORKSPACE_TEXT.muted} hover:text-[#4D433D]`}>
+          <button onClick={onClose} className={`${WORKSPACE_TEXT.muted} hover:text-[var(--takdi-text)]`}>
             <X className="h-4 w-4" />
           </button>
         </div>

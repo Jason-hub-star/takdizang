@@ -171,20 +171,20 @@ const MemoSortableBlock = memo(SortableBlock, (prev, next) => {
 
 function GhostBlock({ block, onConfirm, onCancel }: { block: Block; onConfirm?: () => void; onCancel?: () => void }) {
   return (
-    <div className="relative rounded-[28px] border-2 border-dashed border-[#E6B6A9] opacity-60">
+    <div className="relative rounded-[28px] border-2 border-dashed border-[var(--takdi-block-border-selected)] opacity-60">
       <BlockDispatch block={block} selected={false} onSelect={() => {}} onUpdate={() => {}} readOnly />
       <div className="absolute bottom-3 right-3 flex gap-2">
         <button
           type="button"
           onClick={onConfirm}
-          className="rounded-lg bg-[#D97C67] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#CF705A] transition-colors"
+          className="rounded-lg bg-[var(--takdi-accent)] px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--takdi-accent-strong)] transition-colors"
         >
           배치
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border border-[rgb(214_199_184_/_0.55)] bg-white px-3 py-1.5 text-xs font-medium transition-colors hover:bg-gray-50"
+          className="rounded-lg border border-[var(--takdi-inset-border)] bg-white px-3 py-1.5 text-xs font-medium transition-colors hover:bg-gray-50"
         >
           취소
         </button>
@@ -199,7 +199,7 @@ function InsertButton({ index, active, onClick }: { index: number; active: boole
   if (active) {
     return (
       <div className="flex items-center justify-center py-2">
-          <div className="flex w-full animate-pulse items-center justify-center rounded-2xl border-2 border-dashed border-[#E6B6A9] bg-[#F8E7E2]/70 py-3">
+          <div className="flex w-full animate-pulse items-center justify-center rounded-2xl border-2 border-dashed border-[var(--takdi-block-border-selected)] bg-[var(--takdi-accent-tint-bg)]/70 py-3">
             <span className={`text-xs font-medium ${WORKSPACE_TEXT.accent}`}>블록을 여기에 넣습니다</span>
           </div>
       </div>
@@ -210,7 +210,7 @@ function InsertButton({ index, active, onClick }: { index: number; active: boole
       <div ref={setNodeRef} className="group/insert flex items-center justify-center py-1">
         <div className={`w-full transition-all ${isOver ? "py-2" : ""}`}>
           {isOver ? (
-          <div className="flex w-full items-center justify-center rounded-2xl border-2 border-dashed border-[rgb(230_182_169_/_0.92)] bg-[rgb(248_231_226_/_0.7)] py-3">
+          <div className="flex w-full items-center justify-center rounded-2xl border-2 border-dashed border-[var(--takdi-block-border-selected)] bg-[var(--takdi-accent-tint-bg)] py-3">
             <span className={`text-xs font-medium ${WORKSPACE_TEXT.accent}`}>여기에 블록을 놓으세요</span>
           </div>
         ) : (
@@ -218,7 +218,7 @@ function InsertButton({ index, active, onClick }: { index: number; active: boole
             <button
               type="button"
               onClick={onClick}
-              className="flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-[rgb(213_204_195_/_0.92)] text-[var(--takdi-text-subtle)] opacity-0 transition-opacity hover:border-[var(--takdi-accent)] hover:text-[var(--takdi-accent-strong)] group-hover/insert:opacity-100"
+              className="flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-[var(--takdi-inset-border)] text-[var(--takdi-text-subtle)] opacity-0 transition-opacity hover:border-[var(--takdi-accent)] hover:text-[var(--takdi-accent-strong)] group-hover/insert:opacity-100"
               title="블록 추가"
             >
               <Plus className="h-3 w-3" />

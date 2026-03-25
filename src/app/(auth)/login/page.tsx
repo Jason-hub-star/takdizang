@@ -69,7 +69,7 @@ export default function LoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full rounded-xl border border-[rgb(212_196_181_/_0.6)] bg-white px-4 py-3 text-sm outline-none focus:border-[#d97c67] focus:ring-1 focus:ring-[#d97c67]"
+          className="w-full rounded-xl border border-[rgb(212_196_181_/_0.6)] bg-white px-4 py-3 text-sm outline-none focus:border-[var(--takdi-accent)] focus:ring-1 focus:ring-[var(--takdi-accent)]"
         />
         <input
           type="password"
@@ -77,7 +77,7 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="w-full rounded-xl border border-[rgb(212_196_181_/_0.6)] bg-white px-4 py-3 text-sm outline-none focus:border-[#d97c67] focus:ring-1 focus:ring-[#d97c67]"
+          className="w-full rounded-xl border border-[rgb(212_196_181_/_0.6)] bg-white px-4 py-3 text-sm outline-none focus:border-[var(--takdi-accent)] focus:ring-1 focus:ring-[var(--takdi-accent)]"
         />
 
         {error && (
@@ -116,7 +116,7 @@ export default function LoginPage() {
         계정이 없으신가요?{" "}
         <Link
           href="/signup"
-          className="font-medium text-[#d97c67] hover:underline"
+          className="font-medium text-[var(--takdi-accent)] hover:underline"
         >
           회원가입
         </Link>

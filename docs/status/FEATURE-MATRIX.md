@@ -1,6 +1,6 @@
 # Feature Matrix
 
-Last Updated: 2026-03-17 (KST, Compose AI UX v4 반영)
+Last Updated: 2026-03-25 (KST, Design Token Refactoring 반영)
 Status enum: `Not Started | In Progress | Done | Blocked | Deferred`
 
 | ID | Feature | Status | Owner | Notes |
@@ -61,6 +61,10 @@ Status enum: `Not Started | In Progress | Done | Blocked | Deferred`
 | EDITOR-008 | Undo/Redo (50 스택) + 자동저장 (30초) | Done | claude | Compose와 동일 패턴 |
 | EDITOR-009 | 프로젝트 이름 인라인 편집 | Done | claude | 에디터 헤더 내 편집 |
 | EDITOR-010 | 키보드 단축키 | Done | claude | Ctrl+S/Enter/Z, Esc, Delete |
+| TOKEN-001 | Design token CSS variable foundation | Done | claude | globals.css에 22개 --takdi-* 변수 + @theme inline radius 매핑 |
+| TOKEN-002 | Block state CSS classes | Done | claude | .takdi-block, .takdi-block-selected/-fill/-default, .takdi-add-button |
+| TOKEN-003 | Block renderer token unification (17 files) | Done | claude | 하드코딩 selected/hover/default → CSS 클래스 통일 |
+| TOKEN-004 | Remaining component token migration (40+ files) | Done | claude | hex/rgb → var() 참조 (compose, layout, home, auth) |
 | DEPLOY-001 | Vercel 배포 | Done | jason | https://takdizang.vercel.app (USE_MOCK=true) |
 | DEPLOY-002 | Supabase Auth URL 설정 | Not Started | jason | Site URL + Redirect URLs 설정 필요 |
 | DEPLOY-003 | Supabase migration 적용 | Not Started | jason | 5개 SQL 파일 순서대로 실행 |

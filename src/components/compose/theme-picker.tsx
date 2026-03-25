@@ -43,7 +43,7 @@ export function ThemePicker({ currentTheme, onThemeChange }: ThemePickerProps) {
     <div className={`absolute right-4 top-12 z-50 w-64 rounded-[24px] p-3 ${WORKSPACE_SURFACE.panelStrong}`}>
       <div className="mb-2 flex items-center justify-between">
         <span className={`text-xs font-medium ${WORKSPACE_TEXT.body}`}>테마 선택</span>
-        <button onClick={() => setOpen(false)} className={`text-xs ${WORKSPACE_TEXT.muted} hover:text-[#4D433D]`}>
+        <button onClick={() => setOpen(false)} className={`text-xs ${WORKSPACE_TEXT.muted} hover:text-[var(--takdi-text)]`}>
           닫기
         </button>
       </div>

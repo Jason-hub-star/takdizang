@@ -35,18 +35,14 @@ export function ImageFullBlockRenderer({ block, selected, onSelect, onUpdate, re
   return (
     <div
       ref={containerRef}
-      className={`relative w-full overflow-hidden rounded-[28px] border transition-colors ${
-        selected
-          ? "border-[rgb(236_197_183_/_0.95)] shadow-[0_16px_36px_rgba(217,124,103,0.12)]"
-          : `${WORKSPACE_SURFACE.panel} hover:border-[rgb(215_201_188_/_0.94)]`
-      }`}
+      className={`relative w-full overflow-hidden ${selected ? "takdi-block takdi-block-selected" : "takdi-block takdi-block-default"}`}
       onClick={onSelect}
     >
       {readOnly ? (
         block.imageUrl ? (
           <img src={block.imageUrl} alt="" className="w-full rounded object-cover" style={buildFilterStyle(block.imageFilters) ? { filter: buildFilterStyle(block.imageFilters) } : undefined} />
         ) : (
-          <div className={`flex h-48 items-center justify-center bg-[rgb(248_241_232_/_0.72)] ${WORKSPACE_TEXT.muted}`}>
+          <div className={`flex h-48 items-center justify-center bg-[var(--takdi-soft-bg)] ${WORKSPACE_TEXT.muted}`}>
             <p className="text-sm">전체 이미지</p>
           </div>
         )

@@ -31,11 +31,7 @@ export function SpecTableBlockRenderer({ block, selected, onSelect, onUpdate, re
 
   return (
     <div
-      className={`w-full rounded-[28px] border p-6 transition-colors ${
-        selected
-          ? "border-[rgb(236_197_183_/_0.95)] bg-[rgb(255_249_245_/_0.96)] shadow-[0_16px_36px_rgba(217,124,103,0.12)]"
-          : `${WORKSPACE_SURFACE.panel} hover:border-[rgb(215_201_188_/_0.94)]`
-      }`}
+      className={`w-full p-6 ${selected ? "takdi-block takdi-block-selected takdi-block-selected-fill" : "takdi-block takdi-block-default"}`}
       onClick={onSelect}
     >
       <EditableText
@@ -49,7 +45,7 @@ export function SpecTableBlockRenderer({ block, selected, onSelect, onUpdate, re
       <table className="w-full text-sm">
         <tbody>
           {block.rows.map((row, i) => (
-            <tr key={i} className={`group/row ${i % 2 === 0 ? "bg-[rgb(248_241_232_/_0.48)]" : ""}`}>
+            <tr key={i} className={`group/row ${i % 2 === 0 ? "bg-[var(--takdi-soft-bg)]" : ""}`}>
               <td className={`px-3 py-2 font-medium ${WORKSPACE_TEXT.title}`}>
                 <EditableText
                   value={row.label}
@@ -75,7 +71,7 @@ export function SpecTableBlockRenderer({ block, selected, onSelect, onUpdate, re
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); deleteRow(i); }}
-                    className="flex h-5 w-5 items-center justify-center rounded text-[rgb(196_182_170)] opacity-0 transition-opacity hover:text-[#B45A52] group-hover/row:opacity-100"
+                    className="flex h-5 w-5 items-center justify-center rounded text-[rgb(196_182_170)] opacity-0 transition-opacity hover:text-[var(--takdi-delete-text)] group-hover/row:opacity-100"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -90,7 +86,7 @@ export function SpecTableBlockRenderer({ block, selected, onSelect, onUpdate, re
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); addRow(); }}
-          className="mx-auto mt-3 flex items-center gap-1 rounded-full border border-dashed border-[rgb(214_199_184_/_0.82)] bg-[rgb(255_255_255_/_0.72)] px-3 py-1.5 text-xs text-[var(--takdi-text-subtle)] transition-colors hover:border-[rgb(236_197_183_/_0.95)] hover:text-[var(--takdi-accent-strong)]"
+          className="mx-auto mt-3 flex items-center gap-1 rounded-full takdi-add-button px-3 py-1.5 text-xs"
         >
           <Plus className="h-3 w-3" /> 행 추가
         </button>

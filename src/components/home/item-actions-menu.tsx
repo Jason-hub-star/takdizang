@@ -73,7 +73,7 @@ export function ItemActionsMenu({ label, actions }: ItemActionsMenuProps) {
               }}
               className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm transition ${
                 action.destructive
-                  ? "text-[#B45A52] hover:bg-[rgb(248_230_230_/_0.9)]"
+                  ? "text-[var(--takdi-delete-text)] hover:bg-[rgb(248_230_230_/_0.9)]"
                   : `${WORKSPACE_TEXT.body} hover:bg-[rgb(247_239_231_/_0.92)] hover:text-[var(--takdi-text)]`
               } disabled:cursor-not-allowed disabled:opacity-50`}
             >

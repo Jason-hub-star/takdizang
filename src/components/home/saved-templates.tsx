@@ -244,7 +244,7 @@ export function SavedTemplates({
                       variant="outline"
                       size="sm"
                       onClick={() => setDeleteState(buildBulkDeleteState(selectedTemplates))}
-                      className="rounded-2xl border-[rgb(236_201_201_/_0.95)] bg-[rgb(248_230_230_/_0.95)] text-xs font-medium text-[#B45A52] shadow-none hover:bg-[rgb(245_220_220_/_0.95)]"
+                      className="rounded-2xl border-[var(--takdi-delete-border)] bg-[var(--takdi-delete-bg)] text-xs font-medium text-[var(--takdi-delete-text)] shadow-none hover:bg-[rgb(245_220_220_/_0.95)]"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                       삭제
@@ -294,7 +294,7 @@ export function SavedTemplates({
                             checked={isSelected}
                             onChange={() => toggleSelection(template.id)}
                             onClick={(event) => event.stopPropagation()}
-                            className="mt-2 h-4 w-4 rounded border-[#D4C7B8] text-[#D97C67] focus:ring-[#D97C67]"
+                            className="mt-2 h-4 w-4 rounded border-[#D4C7B8] text-[var(--takdi-accent)] focus:ring-[var(--takdi-accent)]"
                             aria-label={`${template.name} 선택`}
                           />
                         ) : null}
