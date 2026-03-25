@@ -1,6 +1,6 @@
 "use client";
 
-import { type CSSProperties, forwardRef, memo, useCallback, useMemo, useRef } from "react";
+import { type CSSProperties, forwardRef, memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
@@ -252,8 +252,8 @@ export const BlockCanvas = forwardRef<HTMLDivElement, BlockCanvasProps>(function
   const { theme } = useCompose();
   const blocksRef = useRef(blocks);
   const selectedBlockIdRef = useRef(selectedBlockId);
-  blocksRef.current = blocks;
-  selectedBlockIdRef.current = selectedBlockId;
+  useEffect(() => { blocksRef.current = blocks; });
+  useEffect(() => { selectedBlockIdRef.current = selectedBlockId; });
 
   const violations = useMemo(() => validateBlocks(blocks), [blocks]);
   const violationsByBlockId = useMemo(() => {

@@ -10,7 +10,16 @@ export function ShortformComposition({
   const { fps } = useVideoConfig();
   const activeScenes = scenes.length > 0 ? scenes : [];
   const titleFrames = 18;
-  let cursor = titleFrames;
+
+  const sceneEntries = activeScenes.reduce<Array<{ scene: typeof activeScenes[number]; from: number; durationInFrames: number }>>(
+    (acc, scene) => {
+      const prevEnd = acc.length > 0 ? acc[acc.length - 1].from + acc[acc.length - 1].durationInFrames : titleFrames;
+      const durationInFrames = Math.max(30, Math.round((scene.durationMs / 1000) * fps));
+      acc.push({ scene, from: prevEnd, durationInFrames });
+      return acc;
+    },
+    [],
+  );
 
   return (
     <AbsoluteFill
@@ -32,12 +41,7 @@ export function ShortformComposition({
         <TitleCard title={title} />
       </AbsoluteFill>
 
-      {activeScenes.map((scene) => {
-        const durationInFrames = Math.max(30, Math.round((scene.durationMs / 1000) * fps));
-        const from = cursor;
-        cursor += durationInFrames;
-
-        return (
+      {sceneEntries.map(({ scene, from, durationInFrames }) => (
           <Sequence key={`${scene.imageSlot}-${from}`} from={from} durationInFrames={durationInFrames}>
             <SceneCard
               headline={scene.headline}
@@ -46,8 +50,7 @@ export function ShortformComposition({
               orientation={orientation}
             />
           </Sequence>
-        );
-      })}
+        ))}
     </AbsoluteFill>
   );
 }

@@ -5,6 +5,16 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    rules: {
+      // React Compiler strict rules — downgrade to warn for legitimate patterns
+      // (closing overlays on route change, resetting state on prop change, etc.)
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/static-components": "warn",
+      "react-hooks/refs": "warn",
+      "react-hooks/immutability": "warn",
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

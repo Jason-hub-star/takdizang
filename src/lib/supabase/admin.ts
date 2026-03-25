@@ -1,6 +1,7 @@
 /** Server-side Supabase admin client for Takdizang runtime data access. */
 import { createClient } from "@supabase/supabase-js";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Supabase client type varies by key used
 let cachedClient: any = null;
 
 function getSupabaseEnv() {
@@ -33,6 +34,7 @@ export function getSupabaseAdmin() {
       autoRefreshToken: false,
       persistSession: false,
     },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Supabase client type varies by key used
   }) as any;
 
   return cachedClient;

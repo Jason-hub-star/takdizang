@@ -157,21 +157,21 @@ export const NodeCanvas = forwardRef<NodeCanvasHandle, NodeCanvasProps>(function
   ref,
 ) {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const initial = useRef(initialSnapshot ?? buildInitialNodes(mode));
-  const [nodes, setNodes, onNodesChange] = useNodesState(initial.current.nodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initial.current.edges);
+  const [initialState] = useState(() => initialSnapshot ?? buildInitialNodes(mode));
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialState.nodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialState.edges);
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
 
-  const historyRef = useRef<CanvasSnapshot[]>([createSnapshot(initial.current.nodes, initial.current.edges)]);
+  const historyRef = useRef<CanvasSnapshot[]>([createSnapshot(initialState.nodes, initialState.edges)]);
   const historyIndexRef = useRef(0);
   const suppressHistoryRef = useRef(false);
   const historyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastHistoryHashRef = useRef(hashSnapshot(initial.current.nodes, initial.current.edges));
+  const lastHistoryHashRef = useRef(hashSnapshot(initialState.nodes, initialState.edges));
 
   const nodesRef = useRef(nodes);
   const edgesRef = useRef(edges);
-  nodesRef.current = nodes;
-  edgesRef.current = edges;
+  useEffect(() => { nodesRef.current = nodes; });
+  useEffect(() => { edgesRef.current = edges; });
 
   useImperativeHandle(
     ref,

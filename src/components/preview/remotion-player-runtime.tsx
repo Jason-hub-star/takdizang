@@ -26,7 +26,7 @@ export function RemotionPlayerRuntime({
   compositionId,
   inputProps,
 }: RemotionPlayerRuntimeProps) {
-  const [PlayerComponent, setPlayerComponent] = useState<ComponentType<any> | null>(null);
+  const [PlayerComponent, setPlayerComponent] = useState<ComponentType<Record<string, unknown>> | null>(null);
   const [CompositionComponent, setCompositionComponent] =
     useState<ComponentType<RemotionInputProps> | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");

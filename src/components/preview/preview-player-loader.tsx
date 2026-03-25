@@ -45,8 +45,8 @@ export function PreviewPlayerLoader({
     setRuntimeLoadError(null);
 
     try {
-      const module = await import("./remotion-player-runtime");
-      setRuntimeComponent(() => module.RemotionPlayerRuntime);
+      const mod = await import("./remotion-player-runtime");
+      setRuntimeComponent(() => mod.RemotionPlayerRuntime);
       setHasRequestedRuntime(true);
     } catch {
       setRuntimeLoadError("미리보기 런타임을 불러오지 못했습니다. 다시 시도해 주세요.");

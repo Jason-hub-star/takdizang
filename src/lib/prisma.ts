@@ -177,6 +177,7 @@ async function ensureWorkspaceExists(workspaceId: string) {
   workspaceSeedCache.add(workspaceId);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Supabase query builder type is dynamic
 function applyDirectFilters(query: any, where?: Record<string, unknown>) {
   if (!where) {
     return query;

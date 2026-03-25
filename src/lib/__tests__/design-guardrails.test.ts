@@ -59,7 +59,7 @@ describe("design-guardrails", () => {
 
   it("should warn on long text body > 150 chars", () => {
     const longBody = "a".repeat(200);
-    const blocks = [makeBlock("text-block", { body: longBody } as any), makeBlock("cta")];
+    const blocks = [makeBlock("text-block", { body: longBody } as Partial<Block>), makeBlock("cta")];
     const violations = validateBlocks(blocks);
     expect(violations.some((v) => v.rule === "max-text-length")).toBe(true);
   });
@@ -68,7 +68,7 @@ describe("design-guardrails", () => {
     const blocks = [
       makeBlock("hero", {
         overlays: [{ id: "o1", text: "Hi", x: 50, y: 50, fontSize: 10, color: "#fff", fontWeight: "bold", textAlign: "center" }],
-      } as any),
+      } as Partial<Block>),
       makeBlock("cta"),
     ];
     const violations = validateBlocks(blocks);
